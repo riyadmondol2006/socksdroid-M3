@@ -52,6 +52,9 @@ class SocksVpnService : VpnService() {
     @Volatile
     private var tun: ParcelFileDescriptor? = null
 
+    @Volatile
+    private var dnsRelay: DnsRelay? = null
+
     private class SessionFailure(message: String) : Exception(message)
 
     override fun onCreate() {
@@ -165,6 +168,7 @@ class SocksVpnService : VpnService() {
             tun2socks.killStale()
             val fd = establish(profile)
             tun = fd
+            if (profile.remoteDns) dnsRelay = DnsRelay(profile)
             startPdnsd(profile)
             if (!startTun2socks(profile, fd.fileDescriptor)) fail(R.string.vpn_error_tun2socks_start)
         }
@@ -226,11 +230,14 @@ class SocksVpnService : VpnService() {
 
     private fun startPdnsd(profile: Profile) {
         val config = File(filesDir, "pdnsd.conf")
+        // With remote DNS, pdnsd queries the loopback relay, which tunnels through the proxy.
+        val relay = dnsRelay
         config.writeText(
-            getString(R.string.pdnsd_conf)
-                .replace("{DIR}", filesDir.path)
-                .replace("{IP}", profile.dns.trim())
-                .replace("{PORT}", profile.dnsPort.toString()),
+            pdnsdConfig(
+                cacheDir = filesDir.path,
+                upstreamIp = if (relay != null) "127.0.0.1" else profile.dns.trim(),
+                upstreamPort = relay?.port ?: profile.dnsPort,
+            ),
         )
         File(filesDir, "pdnsd.cache").createNewFile()
         try {
@@ -317,6 +324,8 @@ class SocksVpnService : VpnService() {
     private fun releaseResources() {
         tun2socks.stop()
         pdnsd.stop()
+        dnsRelay?.close()
+        dnsRelay = null
         tun?.let {
             tun = null
             try {

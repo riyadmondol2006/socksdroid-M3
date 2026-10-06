@@ -30,6 +30,8 @@ data class Profile(
     val bypassLan: Boolean = true,
     val dns: String = "8.8.8.8",
     val dnsPort: Int = 53,
+    /** Send DNS queries through the SOCKS5 server instead of directly to [dns]. */
+    val remoteDns: Boolean = true,
     val perApp: Boolean = false,
     /** When [perApp] is set: true = listed apps bypass the proxy, false = only listed apps are proxied. */
     val bypassApps: Boolean = false,
@@ -67,6 +69,7 @@ data class Profile(
         .put("bypassLan", bypassLan)
         .put("dns", dns)
         .put("dnsPort", dnsPort)
+        .put("remoteDns", remoteDns)
         .put("perApp", perApp)
         .put("bypassApps", bypassApps)
         .put("apps", JSONArray(apps.sorted()))
@@ -89,6 +92,7 @@ data class Profile(
                 bypassLan = o.optBoolean("bypassLan", d.bypassLan),
                 dns = o.optString("dns", d.dns),
                 dnsPort = o.optInt("dnsPort", d.dnsPort),
+                remoteDns = o.optBoolean("remoteDns", d.remoteDns),
                 perApp = o.optBoolean("perApp", d.perApp),
                 bypassApps = o.optBoolean("bypassApps", d.bypassApps),
                 apps = if (apps == null) emptySet() else (0 until apps.length()).map { apps.getString(it) }.toSet(),

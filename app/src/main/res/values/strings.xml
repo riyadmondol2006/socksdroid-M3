@@ -132,10 +132,12 @@
     <string name="editor_bypass_lan_summary">Connect to local network addresses (192.168.x.x, 10.x.x.x…) directly</string>
     <string name="editor_section_dns">DNS</string>
     <string name="editor_dns_server">DNS server</string>
-    <string name="editor_dns_summary">DNS queries are sent to this server over TCP through the proxy, so it must accept TCP queries.</string>
+    <string name="editor_remote_dns">DNS through proxy</string>
+    <string name="editor_remote_dns_on_summary">Queries reach this server over TCP via the SOCKS5 server, so they don\'t leak to your network. A hostname is allowed.</string>
+    <string name="editor_remote_dns_off_summary">Queries go directly to this server over TCP, bypassing the proxy. Enter an IP address.</string>
     <string name="editor_section_advanced">Advanced</string>
     <string name="editor_ipv6">IPv6</string>
-    <string name="editor_ipv6_summary">Forward IPv6 traffic. If the server supports IPv6, you can reach IPv6 sites even from an IPv4-only network.</string>
+    <string name="editor_ipv6_summary">Forward IPv6 traffic through the proxy. When off, IPv6 is blocked so it can\'t bypass the proxy, and apps use IPv4.</string>
     <string name="editor_udp">UDP forwarding</string>
     <string name="editor_udp_summary">Forward UDP packets through the proxy. Requires badvpn-udpgw running on the server.</string>
     <string name="editor_udp_gateway">UDP gateway</string>

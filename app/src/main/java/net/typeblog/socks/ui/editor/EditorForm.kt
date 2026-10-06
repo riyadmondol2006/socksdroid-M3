@@ -16,6 +16,7 @@ data class EditorForm(
     val bypassLan: Boolean,
     val dns: String,
     val dnsPort: String,
+    val remoteDns: Boolean,
     val ipv6: Boolean,
     val udp: Boolean,
     val udpGateway: String,
@@ -27,7 +28,8 @@ data class EditorForm(
         server = !isHost(server.trim().removeSurrounding("[", "]")),
         port = port.toPortOrNull() == null,
         username = useAuth && username.isEmpty(),
-        dns = !isHost(dns.trim()),
+        // pdnsd needs an IP literal; through the proxy a hostname works too.
+        dns = if (remoteDns) !isHost(dns.trim()) else !isIpLiteral(dns.trim()),
         dnsPort = dnsPort.toPortOrNull() == null,
         udpGateway = udp && !isHostPort(udpGateway.trim()),
     )
@@ -46,6 +48,7 @@ data class EditorForm(
             bypassLan = bypassLan,
             dns = dns.trim(),
             dnsPort = dnsPort.toPortOrNull()!!,
+            remoteDns = remoteDns,
             perApp = perApp,
             bypassApps = bypassApps,
             apps = apps,
@@ -66,6 +69,7 @@ data class EditorForm(
             bypassLan = p.bypassLan,
             dns = p.dns,
             dnsPort = p.dnsPort.toString(),
+            remoteDns = p.remoteDns,
             ipv6 = p.ipv6,
             udp = p.udp,
             udpGateway = p.udpGateway,
@@ -91,6 +95,11 @@ data class EditorErrors(
 private fun String.toPortOrNull(): Int? = trim().toIntOrNull()?.takeIf { it in 1..65535 }
 
 private fun isHost(value: String): Boolean = value.isNotEmpty() && value.none { it.isWhitespace() || it == '/' }
+
+private val IPV4_LITERAL = Regex("""^((25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(25[0-5]|2[0-4]\d|1?\d?\d)$""")
+
+private fun isIpLiteral(value: String): Boolean =
+    IPV4_LITERAL.matches(value) || (':' in value && value.all { it.isLetterOrDigit() || it == ':' || it == '.' })
 
 private val HOST_PORT = Regex("""^(\[[0-9A-Fa-f:.]+]|[^\s:/\[\]]+):(\d{1,5})$""")
 

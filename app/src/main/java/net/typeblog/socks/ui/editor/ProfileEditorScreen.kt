@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Lan
 import androidx.compose.material.icons.rounded.Language
@@ -295,11 +296,14 @@ private fun DnsSection(form: EditorForm, errors: EditorErrors, update: FormUpdat
             modifier = Modifier.width(112.dp),
         )
     }
-    Text(
-        text = stringResource(R.string.editor_dns_summary),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+    SwitchListItem(
+        headline = stringResource(R.string.editor_remote_dns),
+        supporting = stringResource(
+            if (form.remoteDns) R.string.editor_remote_dns_on_summary else R.string.editor_remote_dns_off_summary,
+        ),
+        icon = Icons.Rounded.Dns,
+        checked = form.remoteDns,
+        onCheckedChange = { v -> update { it.copy(remoteDns = v) } },
     )
 }
 

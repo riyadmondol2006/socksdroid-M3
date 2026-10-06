@@ -61,10 +61,10 @@ internal fun VpnService.Builder.configure(context: Context, profile: Profile): V
     addDnsServer(TunConfig.DNS_STUB)
     VpnRoutes.ipv4Routes(context, profile).forEach { addRoute(it.address, it.prefix) }
     addRoute(TunConfig.DNS_STUB, 32)
-    if (profile.ipv6) {
-        addAddress(TunConfig.ADDRESS6, TunConfig.PREFIX6)
-        addRoute("::", 0)
-    }
+    // IPv6 is always captured: tun2socks forwards it when profile.ipv6 is set and drops it
+    // otherwise, so IPv6 traffic can never bypass the proxy (apps fall back to IPv4).
+    addAddress(TunConfig.ADDRESS6, TunConfig.PREFIX6)
+    addRoute("::", 0)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) setMetered(false)
     applyAppRules(context.packageName, profile)
     return this
