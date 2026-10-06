@@ -68,8 +68,9 @@ class SocksVpnService : VpnService() {
                 disconnect()
                 return START_NOT_STICKY
             }
+            // Reconnect with the active profile, which may have been edited or switched.
             ACTION_RESTART -> if (session?.isActive == true) {
-                sessionProfile?.let { start(resolveProfile(it.name), force = true) }
+                start(resolveProfile(null), force = true)
             } else if (stopJob?.isActive != true) {
                 shutdown()
             }

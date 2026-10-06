@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 
 /**
- * Stores profiles in the same SharedPreferences file and per-profile key layout used by
- * SocksDroid 1.x, so existing data keeps working. Safe to use from any thread.
+ * Stores profiles in the SharedPreferences file used by SocksDroid 1.x. Each profile is kept as
+ * JSON under a key derived verbatim from its name; profiles still in the 1.x per-field key layout
+ * are read transparently and converted on their next save. Safe to use from any thread.
  */
 class ProfileRepository(context: Context) {
     private val prefs: SharedPreferences =
@@ -47,7 +48,7 @@ class ProfileRepository(context: Context) {
     /** Inserts or updates [profile] (matched by name). New profiles are appended. */
     @Synchronized
     fun save(profile: Profile) {
-        require(profile.name.isNotBlank()) { "Profile name must not be blank" }
+        require(isValidName(profile.name)) { "Invalid profile name" }
         val names = names()
         prefs.edit {
             write(this, profile)
@@ -58,18 +59,18 @@ class ProfileRepository(context: Context) {
 
     /** Creates a new profile with default settings. Returns null if [name] is blank or already taken. */
     fun create(name: String): Profile? {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty() || trimmed.contains('\n') || trimmed in names()) return null
+        val trimmed = sanitizeName(name)
+        if (!isValidName(trimmed) || trimmed in names()) return null
         return Profile(name = trimmed).also(::save)
     }
 
     /** Renames a profile, keeping its settings. Returns false if [newName] is invalid or taken. */
     @Synchronized
     fun rename(oldName: String, newName: String): Boolean {
-        val trimmed = newName.trim()
+        val trimmed = sanitizeName(newName)
         val names = names()
         val profile = get(oldName) ?: return false
-        if (trimmed.isEmpty() || trimmed.contains('\n') || trimmed in names) return false
+        if (!isValidName(trimmed) || trimmed in names) return false
         prefs.edit {
             removeKeys(this, oldName)
             write(this, profile.copy(name = trimmed))
@@ -113,8 +114,10 @@ class ProfileRepository(context: Context) {
 
     /**
      * Imports profiles from [json] (an array, or a single object). Name clashes get a numeric suffix.
+     * Either every profile is imported or, if any entry is invalid, none is (the parse error is thrown).
      * Returns the number of imported profiles.
      */
+    @Synchronized
     fun importJson(json: String): Int {
         val trimmed = json.trim()
         val objects = if (trimmed.startsWith("[")) {
@@ -122,7 +125,10 @@ class ProfileRepository(context: Context) {
         } else {
             listOf(org.json.JSONObject(trimmed))
         }
-        val imported = objects.map { Profile.fromJson(it) }
+        val imported = objects.map { o ->
+            Profile.fromJson(o).let { it.copy(name = sanitizeName(it.name)) }
+                .also { require(isValidName(it.name)) { "Profile without a name" } }
+        }
         imported.forEach { save(it.copy(name = uniqueName(it.name))) }
         return imported.size
     }
@@ -146,6 +152,13 @@ class ProfileRepository(context: Context) {
     }
 
     private fun read(name: String): Profile {
+        prefs.getString(KEY_JSON_PREFIX + name, null)?.let { json ->
+            runCatching { return Profile.fromJson(org.json.JSONObject(json)).copy(name = name) }
+        }
+        return readLegacy(name)
+    }
+
+    private fun readLegacy(name: String): Profile {
         val k = KeyPrefix(name)
         val d = Profile(name = name)
         return Profile(
@@ -169,30 +182,23 @@ class ProfileRepository(context: Context) {
     }
 
     private fun write(e: SharedPreferences.Editor, p: Profile) {
-        val k = KeyPrefix(p.name)
-        e.putString(k("server"), p.server.trim())
-            .putInt(k("port"), p.port)
-            .putBoolean(k("userpw"), p.useAuth)
-            .putString(k("username"), p.username)
-            .putString(k("password"), p.password)
-            .putString(k("route"), p.route.key)
-            .putBoolean(k("bypasslan"), p.bypassLan)
-            .putString(k("dns"), p.dns.trim())
-            .putInt(k("dns_port"), p.dnsPort)
-            .putBoolean(k("perapp"), p.perApp)
-            .putBoolean(k("appbypass"), p.bypassApps)
-            .putString(k("applist"), p.apps.sorted().joinToString("\n"))
-            .putBoolean(k("ipv6"), p.ipv6)
-            .putBoolean(k("udp"), p.udp)
-            .putString(k("udpgw"), p.udpGateway.trim())
+        val normalized = p.copy(server = p.server.trim(), dns = p.dns.trim(), udpGateway = p.udpGateway.trim())
+        removeLegacyKeys(e, p.name)
+        e.putString(KEY_JSON_PREFIX + p.name, normalized.toJson().toString())
     }
 
     private fun removeKeys(e: SharedPreferences.Editor, name: String) {
-        val k = KeyPrefix(name)
-        PROFILE_KEYS.forEach { e.remove(k(it)) }
+        removeLegacyKeys(e, name)
+        e.remove(KEY_JSON_PREFIX + name)
     }
 
-    /** Legacy key scheme: "_" is escaped to "__" and " " becomes "_". */
+    private fun removeLegacyKeys(e: SharedPreferences.Editor, name: String) {
+        val k = KeyPrefix(name)
+        // The 1.x scheme is ambiguous ("a  b" and "a_b" share keys); only clear it for profiles that use it.
+        if (!prefs.contains(KEY_JSON_PREFIX + name)) LEGACY_PROFILE_KEYS.forEach { e.remove(k(it)) }
+    }
+
+    /** 1.x key scheme: "_" is escaped to "__" and " " becomes "_". */
     private class KeyPrefix(name: String) {
         private val prefix = name.replace("_", "__").replace(" ", "_")
         operator fun invoke(key: String) = prefix + key
@@ -204,9 +210,15 @@ class ProfileRepository(context: Context) {
         private const val LEGACY_KEY_LIST = "profile"
         private const val KEY_LIST = "profiles_v2"
         private const val KEY_ACTIVE = "last_profile"
-        private val PROFILE_KEYS = listOf(
+        private const val KEY_JSON_PREFIX = "profile_json:"
+        private val LEGACY_PROFILE_KEYS = listOf(
             "server", "port", "userpw", "username", "password", "route", "bypasslan", "dns",
             "dns_port", "perapp", "appbypass", "applist", "ipv6", "udp", "udpgw", "auto",
         )
+
+        /** Collapses whitespace (including newlines, which would corrupt the stored list) and trims. */
+        fun sanitizeName(name: String): String = name.replace(Regex("\\s+"), " ").trim()
+
+        fun isValidName(name: String): Boolean = name.isNotEmpty() && name == sanitizeName(name)
     }
 }

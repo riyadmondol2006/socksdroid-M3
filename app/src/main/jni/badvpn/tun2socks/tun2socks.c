@@ -400,6 +400,9 @@ int main (int argc, char **argv)
     // open standard streams
     open_standard_streams();
 
+    // line-buffer stdout so log lines reach the app promptly when piped
+    setvbuf(stdout, NULL, _IOLBF, 0);
+
     // parse command-line arguments
     if (!parse_arguments(argc, argv)) {
         fprintf(stderr, "Failed to parse arguments\n");
