@@ -70,7 +70,7 @@
         <service
             android:name=".vpn.ProxyTileService"
             android:exported="true"
-            android:icon="@drawable/ic_vpn"
+            android:icon="@drawable/ic_tile_vpn"
             android:label="@string/tile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
