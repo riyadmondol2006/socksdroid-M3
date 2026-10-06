@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SocksDroid" parent="Theme.SocksDroid.Base">
+        <item name="android:windowLightNavigationBar">@bool/light_system_bars</item>
+    </style>
+</resources>

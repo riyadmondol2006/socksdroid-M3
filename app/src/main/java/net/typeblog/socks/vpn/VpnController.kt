@@ -5,6 +5,8 @@ import android.content.Intent
 
 /** Entry points for starting / stopping the proxy from the UI, the tile and the boot receiver. */
 object VpnController {
+    const val ACTION_REQUEST_CONNECT = "net.typeblog.socks.action.REQUEST_CONNECT"
+
     /** Returns the system consent Intent to launch, or null if VPN permission is already granted. */
     fun prepare(context: Context): Intent? = TODO("implemented by the service layer")
 
