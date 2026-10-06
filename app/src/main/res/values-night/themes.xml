@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Window theme only; all UI is drawn by Compose with Material 3. The window background
-         matches the Compose surface so there is no flash before the first frame. -->
-    <style name="Theme.SocksDroid.Base" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.SocksDroid.Base" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/window_background</item>
         <item name="android:colorBackground">@color/window_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/light_system_bars</item>
     </style>
-
-    <style name="Theme.SocksDroid" parent="Theme.SocksDroid.Base" />
 </resources>

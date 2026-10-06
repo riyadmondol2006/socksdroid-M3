@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the fallback Material 3 surface color of the Compose theme. -->
+    <color name="window_background">#FBF8FF</color>
+    <bool name="light_system_bars">true</bool>
+</resources>

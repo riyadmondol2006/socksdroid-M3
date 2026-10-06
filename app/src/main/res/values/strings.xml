@@ -4,45 +4,209 @@
     <string name="app_name">SocksDroid</string>
     <string name="tile_label">SOCKS proxy</string>
 
-    <string name="profile">Profile</string>
-    <string name="prof_default">Default</string>
+    <!-- Common actions -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_create">Create</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_import">Import</string>
+    <string name="action_more">More options</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_save">Save</string>
 
-    <string name="connection">Connection</string>
-    <string name="server_ip">Server IP</string>
-    <string name="server_port">Server Port</string>
-    <string name="ipv6_proxy">IPv6</string>
-    <string name="ipv6_proxy_sum">Enable IPv6 forwarding. If the server supports IPv6, you can access IPv6 contents from IPv4 network with this enabled.</string>
-    <string name="udp_proxy">UDP Forwarding</string>
-    <string name="udp_proxy_sum">Forward UDP packets to badvpn-udpgw via SOCKS5. This needs badvpn-udpgw running on the remote server (normally listening on 127.0.0.1) to work.</string>
-    <string name="udp_gw">UDP Gateway (Remote)</string>
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_profiles">Profiles</string>
+    <string name="nav_settings">Settings</string>
 
-    <string name="authentication">Authentication</string>
-    <string name="auth_userpw">Username &amp; Password Authentication</string>
-    <string name="auth_username">Username</string>
-    <string name="auth_password">Password</string>
+    <!-- Shared labels -->
+    <string name="route_all">All traffic</string>
+    <string name="route_non_china">Non-China</string>
+    <string name="profile_name">Profile name</string>
+    <string name="name_error_empty">Enter a name</string>
+    <string name="name_error_taken">A profile with this name already exists</string>
 
-    <string name="advanced">Advanced</string>
-    <string name="adv_route">Route</string>
-    <string name="adv_route_all">All (Default)</string>
-    <string name="adv_route_non_chn">Non-Chinese IPs</string>
-    <string name="adv_dns">DNS Server</string>
-    <string name="adv_dns_port">DNS Port (TCP)</string>
-    <string name="adv_auto_connect">Connect on Boot</string>
-    <string name="adv_per_app">Per-app Proxy</string>
-    <string name="adv_app_bypass">Bypass Mode</string>
-    <string name="adv_app_bypass_sum">Enable this option to bypass selected apps instead of proxying them</string>
-    <string name="adv_app_list">App List</string>
-    <string name="adv_app_list_sum">Enter one app\'s package name in one line. See Settings -> Apps for package names of apps.</string>
+    <!-- Home -->
+    <string name="home_status_disconnected">Not connected</string>
+    <string name="home_status_connecting">Connecting…</string>
+    <string name="home_status_connected">Connected</string>
+    <string name="home_status_disconnecting">Disconnecting…</string>
+    <string name="home_status_error">Connection failed</string>
+    <string name="home_via_profile">via %1$s</string>
+    <string name="home_connect_button">VPN connection</string>
+    <string name="home_action_connect">connect</string>
+    <string name="home_action_disconnect">disconnect</string>
+    <string name="home_active_profile">Active profile</string>
+    <string name="home_edit_profile">Edit profile</string>
+    <string name="home_switch_profile">Switch</string>
+    <string name="home_choose_profile">Choose profile</string>
+    <string name="home_test">Test</string>
+    <string name="home_test_success">Server reachable · %1$d ms</string>
+    <string name="home_test_success_ip">Server reachable · %1$d ms · exit IP %2$s</string>
+    <string name="home_test_failure">Test failed: %1$s</string>
+    <string name="home_consent_denied">VPN permission was not granted</string>
+    <string name="home_consent_unavailable">This device doesn\'t allow apps to set up a VPN</string>
+    <string name="home_start_blocked">Android didn\'t allow the VPN to start. Open SocksDroid and try again.</string>
+    <string name="home_switched_reconnecting">Switched to %1$s, reconnecting…</string>
+    <plurals name="badge_per_app_proxy">
+        <item quantity="one">Proxies %d app</item>
+        <item quantity="other">Proxies %d apps</item>
+    </plurals>
+    <plurals name="badge_per_app_bypass">
+        <item quantity="one">Bypasses %d app</item>
+        <item quantity="other">Bypasses %d apps</item>
+    </plurals>
+    <string name="badge_auth">Auth</string>
+    <string name="badge_udp">UDP</string>
+    <string name="badge_ipv6">IPv6</string>
 
-    <string name="prof_add">Add Profile</string>
-    <string name="prof_del">Delete Profile</string>
-    <string name="prof_del_confirm">Delete profile %s?</string>
-    <string name="switch_main">Switch on / off the proxy</string>
+    <!-- Profiles -->
+    <string name="profiles_new">New profile</string>
+    <string name="profiles_rename">Rename</string>
+    <string name="profiles_duplicate">Duplicate</string>
+    <string name="profiles_set_active">Set as active</string>
+    <string name="profiles_share">Share link</string>
+    <string name="profiles_share_no_credentials">Share link without password</string>
+    <string name="profiles_share_title">Share profile</string>
+    <string name="profiles_actions_for">Actions for %1$s</string>
+    <string name="profiles_active">Active</string>
+    <string name="profiles_inactive">Not active</string>
+    <string name="profiles_now_active">%1$s is now active</string>
+    <string name="profiles_duplicated">Created %1$s</string>
+    <string name="profiles_rename_failed">Couldn\'t rename the profile</string>
+    <string name="profiles_deleted">Deleted %1$s</string>
+    <string name="profiles_delete_title">Delete profile?</string>
+    <string name="profiles_delete_message">%1$s will be removed from this device.</string>
+    <string name="profiles_import_clipboard">Import link from clipboard</string>
+    <string name="profiles_import_file">Import from file</string>
+    <string name="profiles_export_file">Export to file</string>
+    <string name="profiles_imported_name">Imported</string>
+    <string name="profiles_imported_one">Imported %1$s</string>
+    <string name="profiles_clipboard_invalid">The clipboard doesn\'t contain a socks5:// link</string>
+    <string name="profiles_link_invalid">This isn\'t a valid SOCKS link</string>
+    <string name="profiles_import_invalid">This file doesn\'t contain SocksDroid profiles</string>
+    <string name="profiles_import_failed">Couldn\'t read the file</string>
+    <string name="profiles_export_failed">Couldn\'t write the file</string>
+    <string name="profiles_no_file_picker">No file manager is available</string>
+    <plurals name="profiles_imported_count">
+        <item quantity="one">Imported %d profile</item>
+        <item quantity="other">Imported %d profiles</item>
+    </plurals>
+    <plurals name="profiles_exported_count">
+        <item quantity="one">Exported %d profile (including passwords)</item>
+        <item quantity="other">Exported %d profiles (including passwords)</item>
+    </plurals>
 
-    <string name="err_add_prof">Failed to add profile %s</string>
-    <string name="err_del_prof">Error deleting profile %s</string>
-    <string name="notify_title">SOCKS5 proxy activated</string>
-    <string name="notify_msg">Connected to %s</string>
-    <string name="channel_name">Proxy active</string>
+    <!-- Incoming socks5:// links -->
+    <string name="import_title">Import profile?</string>
+    <string name="import_message">A link wants to add this SOCKS server to SocksDroid.</string>
+    <string name="import_user">User: %1$s</string>
+
+    <!-- Profile editor -->
+    <string name="editor_title">Edit profile</string>
+    <string name="editor_saved">Profile saved</string>
+    <string name="editor_saved_reconnecting">Profile saved, reconnecting…</string>
+    <string name="editor_discard_title">Discard changes?</string>
+    <string name="editor_discard_message">Your changes to this profile haven\'t been saved.</string>
+    <string name="editor_discard">Discard</string>
+    <string name="editor_keep_editing">Keep editing</string>
+    <string name="editor_section_server">Server</string>
+    <string name="editor_server">Server address</string>
+    <string name="editor_port">Port</string>
+    <string name="editor_error_server">Enter a host name or IP address</string>
+    <string name="editor_error_port">1–65535</string>
+    <string name="editor_section_auth">Authentication</string>
+    <string name="editor_use_auth">Username &amp; password</string>
+    <string name="editor_use_auth_summary">Sign in to the SOCKS5 server</string>
+    <string name="editor_username">Username</string>
+    <string name="editor_error_username">Enter a username</string>
+    <string name="editor_password">Password</string>
+    <string name="editor_show_password">Show password</string>
+    <string name="editor_hide_password">Hide password</string>
+    <string name="editor_section_routing">Routing</string>
+    <string name="editor_route">Route</string>
+    <string name="editor_route_all_summary">All IPv4 traffic goes through the proxy.</string>
+    <string name="editor_route_non_china_summary">Traffic to mainland China IP ranges connects directly; everything else goes through the proxy.</string>
+    <string name="editor_bypass_lan">Bypass LAN</string>
+    <string name="editor_bypass_lan_summary">Connect to local network addresses (192.168.x.x, 10.x.x.x…) directly</string>
+    <string name="editor_section_dns">DNS</string>
+    <string name="editor_dns_server">DNS server</string>
+    <string name="editor_dns_summary">DNS queries are sent to this server over TCP through the proxy, so it must accept TCP queries.</string>
+    <string name="editor_section_advanced">Advanced</string>
+    <string name="editor_ipv6">IPv6</string>
+    <string name="editor_ipv6_summary">Forward IPv6 traffic. If the server supports IPv6, you can reach IPv6 sites even from an IPv4-only network.</string>
+    <string name="editor_udp">UDP forwarding</string>
+    <string name="editor_udp_summary">Forward UDP packets through the proxy. Requires badvpn-udpgw running on the server.</string>
+    <string name="editor_udp_gateway">UDP gateway</string>
+    <string name="editor_udp_gateway_summary">Address of badvpn-udpgw as seen from the server, usually 127.0.0.1:7300</string>
+    <string name="editor_error_udp_gateway">Use the form host:port</string>
+    <string name="editor_section_per_app">Per-app proxy</string>
+    <string name="editor_per_app">Per-app proxy</string>
+    <string name="editor_per_app_summary">Apply the proxy to some apps only</string>
+    <string name="editor_mode_proxy">Proxy selected</string>
+    <string name="editor_mode_bypass">Bypass selected</string>
+    <string name="editor_choose_apps">Choose apps</string>
+    <plurals name="editor_apps_selected">
+        <item quantity="one">%d app selected</item>
+        <item quantity="other">%d apps selected</item>
+    </plurals>
+
+    <!-- App picker -->
+    <string name="apps_title">Choose apps</string>
+    <string name="apps_search">Search apps</string>
+    <string name="apps_clear_search">Clear search</string>
+    <string name="apps_show_system">System apps</string>
+    <string name="apps_select_all">Select all shown apps</string>
+    <string name="apps_clear">Clear selection</string>
+    <string name="apps_empty">No apps found</string>
+
+    <!-- Settings -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Dynamic color</string>
+    <string name="settings_dynamic_color_summary">Use colors from your wallpaper</string>
+    <string name="settings_amoled">Pure black</string>
+    <string name="settings_amoled_summary">Use a black background in dark theme</string>
+    <string name="settings_section_connection">Connection</string>
+    <string name="settings_connect_on_boot">Connect on boot</string>
+    <string name="settings_connect_on_boot_summary">Start the active profile when the device starts. Connect once by hand first so Android has granted VPN permission.</string>
+    <string name="settings_auto_reconnect">Auto-reconnect</string>
+    <string name="settings_auto_reconnect_summary">Restart the tunnel if it stops unexpectedly</string>
+    <string name="settings_always_on">Always-on VPN &amp; kill switch</string>
+    <string name="settings_always_on_summary">In system VPN settings, tap the gear next to SocksDroid to keep it always on and block connections without VPN</string>
+    <string name="settings_notifications">Allow notifications</string>
+    <string name="settings_notifications_summary">Show connection status and a disconnect button while connected</string>
+    <string name="settings_tile">Quick Settings tile</string>
+    <string name="settings_tile_summary">Add a tile to switch the proxy from Quick Settings</string>
+    <string name="settings_tile_hint">Edit your Quick Settings panel and drag the SOCKS proxy tile in to switch the proxy from anywhere</string>
+    <string name="settings_tile_added">Tile added to Quick Settings</string>
+    <string name="settings_tile_already_added">The tile is already in Quick Settings</string>
+    <string name="settings_tile_failed">Couldn\'t add the tile</string>
+    <string name="settings_unavailable">This setting isn\'t available on this device</string>
+    <string name="settings_section_troubleshooting">Troubleshooting</string>
+    <string name="settings_logs">Logs</string>
+    <string name="settings_logs_summary">Output from the VPN service and tunnel</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_source">Source code</string>
+    <string name="settings_source_summary">github.com/riyadmondol2006/SocksDroid</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="settings_license">License</string>
+    <string name="settings_license_summary">GNU General Public License v3.0</string>
+    <string name="settings_credits">Credits</string>
+    <string name="settings_credits_summary">Based on SocksDroid by PeterCxy. Uses tun2socks from badvpn and pdnsd.</string>
+
+    <!-- Logs -->
+    <string name="logs_title">Logs</string>
+    <string name="logs_empty">No log output yet. Connect to see what the tunnel is doing.</string>
+    <string name="logs_copy">Copy all</string>
+    <string name="logs_copied">Logs copied</string>
+    <string name="logs_share">Share</string>
+    <string name="logs_share_title">SocksDroid logs</string>
+    <string name="logs_clear">Clear</string>
 
 </resources>
