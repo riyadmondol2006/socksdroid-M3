@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">SocksDroid</string>
+    <string name="tile_label">SOCKS proxy</string>
 
     <string name="profile">Profile</string>
     <string name="prof_default">Default</string>
