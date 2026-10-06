@@ -104,7 +104,7 @@ apps ──► tun0 (VpnService) ──► tun2socks ──► SOCKS5 server ─
 - `vpn/SocksVpnService.kt` sets up the tun interface and supervises the two native daemons. It passes the tun file
   descriptor to tun2socks over a Unix socket using `LocalSocket`.
 - The app excludes itself from its own VPN, so tun2socks and the DNS relay can reach the SOCKS5 server directly.
-- `data/` stores profiles and settings in SharedPreferences. Profiles saved by SocksDroid 1.x are still read.
+- `data/` stores profiles and settings in SharedPreferences. Profiles saved by SocksDroid 1.x are converted automatically on first launch.
 - `ui/` contains the Compose screens: Home, Profiles, Editor, App picker, Settings and Logs.
 
 ## Privacy
