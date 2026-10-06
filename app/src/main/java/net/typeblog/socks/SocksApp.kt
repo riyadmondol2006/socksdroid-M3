@@ -15,6 +15,8 @@ class SocksApp : Application() {
         instance = this
         profiles = ProfileRepository(this)
         settings = SettingsRepository(this)
+        // 1.x stored "connect on boot" per profile; carry the active profile's choice over.
+        if (profiles.legacyAutoConnect) settings.update { it.copy(connectOnBoot = true) }
     }
 
     companion object {

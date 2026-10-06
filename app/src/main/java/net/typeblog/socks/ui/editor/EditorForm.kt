@@ -3,6 +3,9 @@ package net.typeblog.socks.ui.editor
 import androidx.compose.runtime.Immutable
 import net.typeblog.socks.data.Profile
 import net.typeblog.socks.data.RouteMode
+import net.typeblog.socks.data.Validation
+import org.json.JSONArray
+import org.json.JSONObject
 
 /** Editable copy of a [Profile]; numeric fields stay as text so partial input can be shown. */
 @Immutable
@@ -25,13 +28,13 @@ data class EditorForm(
     val apps: Set<String>,
 ) {
     fun validate() = EditorErrors(
-        server = !isHost(server.trim().removeSurrounding("[", "]")),
+        server = !Validation.isHost(server.trim().removeSurrounding("[", "]")),
         port = port.toPortOrNull() == null,
         username = useAuth && username.isEmpty(),
-        // pdnsd needs an IP literal; through the proxy a hostname works too.
-        dns = if (remoteDns) !isHost(dns.trim()) else !isIpLiteral(dns.trim()),
+        // pdnsd needs an IPv4 literal; through the proxy a hostname works too.
+        dns = if (remoteDns) !Validation.isHost(dns.trim()) else !Validation.isIpv4(dns.trim()),
         dnsPort = dnsPort.toPortOrNull() == null,
-        udpGateway = udp && !isHostPort(udpGateway.trim()),
+        udpGateway = udp && !Validation.isHostPort(udpGateway.trim()),
     )
 
     /** The profile this form describes, or null if any field is invalid. */
@@ -58,7 +61,39 @@ data class EditorForm(
         )
     }
 
+    fun toJson(): String = JSONObject()
+        .put("server", server).put("port", port)
+        .put("useAuth", useAuth).put("username", username).put("password", password)
+        .put("route", route.key).put("bypassLan", bypassLan)
+        .put("dns", dns).put("dnsPort", dnsPort).put("remoteDns", remoteDns)
+        .put("ipv6", ipv6).put("udp", udp).put("udpGateway", udpGateway)
+        .put("perApp", perApp).put("bypassApps", bypassApps).put("apps", JSONArray(apps.toList()))
+        .toString()
+
     companion object {
+        fun fromJson(json: String): EditorForm? = runCatching {
+            val o = JSONObject(json)
+            val apps = o.getJSONArray("apps")
+            EditorForm(
+                server = o.getString("server"),
+                port = o.getString("port"),
+                useAuth = o.getBoolean("useAuth"),
+                username = o.getString("username"),
+                password = o.getString("password"),
+                route = RouteMode.fromKey(o.getString("route")),
+                bypassLan = o.getBoolean("bypassLan"),
+                dns = o.getString("dns"),
+                dnsPort = o.getString("dnsPort"),
+                remoteDns = o.getBoolean("remoteDns"),
+                ipv6 = o.getBoolean("ipv6"),
+                udp = o.getBoolean("udp"),
+                udpGateway = o.getString("udpGateway"),
+                perApp = o.getBoolean("perApp"),
+                bypassApps = o.getBoolean("bypassApps"),
+                apps = (0 until apps.length()).map(apps::getString).toSet(),
+            )
+        }.getOrNull()
+
         fun from(p: Profile) = EditorForm(
             server = p.server,
             port = p.port.toString(),
@@ -92,17 +127,4 @@ data class EditorErrors(
     val any: Boolean get() = server || port || username || dns || dnsPort || udpGateway
 }
 
-private fun String.toPortOrNull(): Int? = trim().toIntOrNull()?.takeIf { it in 1..65535 }
-
-private fun isHost(value: String): Boolean = value.isNotEmpty() && value.none { it.isWhitespace() || it == '/' }
-
-private val IPV4_LITERAL = Regex("""^((25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(25[0-5]|2[0-4]\d|1?\d?\d)$""")
-
-private fun isIpLiteral(value: String): Boolean =
-    IPV4_LITERAL.matches(value) || (':' in value && value.all { it.isLetterOrDigit() || it == ':' || it == '.' })
-
-private val HOST_PORT = Regex("""^(\[[0-9A-Fa-f:.]+]|[^\s:/\[\]]+):(\d{1,5})$""")
-
-/** `host:port` or `[ipv6]:port`, as expected by tun2socks' --udpgw-remote-server-addr. */
-private fun isHostPort(value: String): Boolean =
-    HOST_PORT.matchEntire(value)?.groupValues?.get(2)?.toPortOrNull() != null
+private fun String.toPortOrNull(): Int? = Validation.parsePort(this)

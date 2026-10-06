@@ -33,4 +33,5 @@
     <string name="vpn_test_auth_failed">Authentication failed</string>
     <string name="vpn_test_no_method">Server offers no supported authentication method</string>
     <string name="vpn_test_credentials_too_long">Username or password is too long</string>
+    <string name="vpn_error_invalid_profile">The profile has invalid settings. Open it in the editor to fix them.</string>
 </resources>

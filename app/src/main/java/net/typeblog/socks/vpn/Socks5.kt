@@ -3,6 +3,7 @@ package net.typeblog.socks.vpn
 import androidx.annotation.StringRes
 import net.typeblog.socks.R
 import net.typeblog.socks.data.Profile
+import net.typeblog.socks.data.Validation
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -19,23 +20,23 @@ internal object Socks5 {
     private const val ATYP_DOMAIN = 0x03
     private const val ATYP_IPV6 = 0x04
 
-    private val IPV4_LITERAL = Regex("""\d{1,3}(\.\d{1,3}){3}""")
-
     /** A protocol-level failure with a user-facing message. */
     class Failure(@StringRes val messageRes: Int) : IOException()
 
     /** Method negotiation and, if the profile has credentials, username/password authentication. */
     fun negotiate(profile: Profile, input: DataInputStream, output: OutputStream) {
-        val methods = if (profile.useAuth) listOf(METHOD_NONE, METHOD_USER_PASS) else listOf(METHOD_NONE)
+        // Matches tun2socks, which only authenticates when a username is set.
+        val useAuth = profile.useAuth && profile.username.isNotEmpty()
+        val methods = if (useAuth) listOf(METHOD_NONE, METHOD_USER_PASS) else listOf(METHOD_NONE)
         output.write(byteArrayOf(VERSION.toByte(), methods.size.toByte()) + methods.map(Int::toByte))
         output.flush()
         if (input.readUnsignedByte() != VERSION) throw Failure(R.string.vpn_test_not_socks5)
         when (input.readUnsignedByte()) {
             METHOD_NONE -> Unit
             METHOD_USER_PASS ->
-                if (profile.useAuth) authenticate(profile, input, output) else throw Failure(R.string.vpn_test_auth_required)
+                if (useAuth) authenticate(profile, input, output) else throw Failure(R.string.vpn_test_auth_required)
             METHOD_REJECTED ->
-                throw Failure(if (profile.useAuth) R.string.vpn_test_no_method else R.string.vpn_test_auth_required)
+                throw Failure(if (useAuth) R.string.vpn_test_no_method else R.string.vpn_test_auth_required)
             else -> throw Failure(R.string.vpn_test_no_method)
         }
     }
@@ -73,7 +74,7 @@ internal object Socks5 {
 
     private fun encodeAddress(host: String): ByteArray = when {
         // Literals are parsed locally; InetAddress never does a DNS lookup for them.
-        IPV4_LITERAL.matches(host) -> byteArrayOf(ATYP_IPV4.toByte()) + InetAddress.getByName(host).address
+        Validation.isIpv4(host) -> byteArrayOf(ATYP_IPV4.toByte()) + InetAddress.getByName(host).address
         ':' in host -> byteArrayOf(ATYP_IPV6.toByte()) + InetAddress.getByName(host).address
         else -> host.toByteArray().let { byteArrayOf(ATYP_DOMAIN.toByte(), it.size.toByte()) + it }
     }

@@ -23,13 +23,18 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import net.typeblog.socks.R
 import net.typeblog.socks.SocksApp
 import net.typeblog.socks.data.Profile
+import net.typeblog.socks.data.isValid
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
+import kotlin.concurrent.thread
 
 internal const val LOG_TAG = "vpn"
 
@@ -48,6 +53,10 @@ class SocksVpnService : VpnService() {
     private var session: Job? = null
     private var sessionProfile: Profile? = null
     private var stopJob: Job? = null
+    private var lastStartId = 0
+
+    /** Serializes sessions: a new one only connects after the previous one has fully released. */
+    private val sessionLock = Mutex()
 
     @Volatile
     private var tun: ParcelFileDescriptor? = null
@@ -66,6 +75,7 @@ class SocksVpnService : VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        lastStartId = startId
         when (intent?.action) {
             ACTION_STOP -> {
                 disconnect()
@@ -91,7 +101,8 @@ class SocksVpnService : VpnService() {
 
     override fun onDestroy() {
         scope.cancel()
-        releaseResources()
+        // Stopping the daemons can block for a moment; keep it off the main thread.
+        thread(name = "vpn-teardown") { releaseResources() }
         if (VpnStateHolder.state.value !is VpnState.Error) setState(VpnState.Disconnected)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
@@ -129,39 +140,48 @@ class SocksVpnService : VpnService() {
         }
     }
 
+    /**
+     * Stops the service unless a newer start command is already queued, in which case that command
+     * must still be able to call startForeground().
+     */
     private fun shutdown() {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        if (stopSelfResult(lastStartId)) {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        }
     }
 
     private fun launchSession(profile: Profile) {
-        val previous = session
+        // Cancel synchronously so a session replaced before it even started can't outlive this one.
+        session?.cancel()
         sessionProfile = profile
         session = scope.launch {
-            previous?.cancelAndJoin()
-            var failure: String? = null
-            try {
-                connect(profile)
-                supervise(profile)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: SessionFailure) {
-                failure = e.message
-            } catch (e: Exception) {
-                failure = getString(R.string.vpn_error_unexpected, e.message ?: e.javaClass.simpleName)
-            } finally {
-                withContext(NonCancellable + Dispatchers.IO) { releaseResources() }
-            }
-            failure?.let {
-                LogBuffer.append(LOG_TAG, "Error: $it")
-                setState(VpnState.Error(it))
-                shutdown()
+            sessionLock.withLock {
+                var failure: String? = null
+                try {
+                    connect(profile)
+                    supervise(profile)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: SessionFailure) {
+                    failure = e.message
+                } catch (e: Exception) {
+                    failure = getString(R.string.vpn_error_unexpected, e.message ?: e.javaClass.simpleName)
+                } finally {
+                    withContext(NonCancellable + Dispatchers.IO) { releaseResources() }
+                }
+                // A session that was replaced or stopped meanwhile must not touch the service.
+                if (failure != null && isActive) {
+                    LogBuffer.append(LOG_TAG, "Error: $failure")
+                    setState(VpnState.Error(failure))
+                    shutdown()
+                }
             }
         }
     }
 
     private suspend fun connect(profile: Profile) {
         setState(VpnState.Connecting(profile.name))
+        if (!profile.isValid) fail(R.string.vpn_error_invalid_profile)
         LogBuffer.append(LOG_TAG, "Connecting to ${profile.endpoint} (profile \"${profile.name}\")")
         withContext(Dispatchers.IO) {
             pdnsd.killStale()
@@ -354,7 +374,7 @@ class SocksVpnService : VpnService() {
         // ForegroundServiceStartNotAllowedException, e.g. a sticky restart from the background.
         LogBuffer.append(LOG_TAG, "Could not start in foreground: ${e.message}")
         setState(VpnState.Error(getString(R.string.vpn_error_foreground)))
-        stopSelf()
+        shutdown()
         false
     }
 

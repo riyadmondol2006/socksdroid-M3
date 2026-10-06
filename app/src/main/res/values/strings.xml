@@ -134,7 +134,7 @@
     <string name="editor_dns_server">DNS server</string>
     <string name="editor_remote_dns">DNS through proxy</string>
     <string name="editor_remote_dns_on_summary">Queries reach this server over TCP via the SOCKS5 server, so they don\'t leak to your network. A hostname is allowed.</string>
-    <string name="editor_remote_dns_off_summary">Queries go directly to this server over TCP, bypassing the proxy. Enter an IP address.</string>
+    <string name="editor_remote_dns_off_summary">Queries go directly to this server over TCP, bypassing the proxy. Enter an IPv4 address.</string>
     <string name="editor_section_advanced">Advanced</string>
     <string name="editor_ipv6">IPv6</string>
     <string name="editor_ipv6_summary">Forward IPv6 traffic through the proxy. When off, IPv6 is blocked so it can\'t bypass the proxy, and apps use IPv4.</string>

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import net.typeblog.socks.R
+import net.typeblog.socks.data.ProfileRepository
 
 enum class NameError(@StringRes val message: Int) {
     EMPTY(R.string.name_error_empty),
@@ -33,11 +34,11 @@ enum class NameError(@StringRes val message: Int) {
  * Collapses whitespace (including line breaks, which the profile list uses as a separator) in a
  * name that came from outside the app, such as a shared link.
  */
-fun sanitizeProfileName(name: String): String = name.replace(Regex("\\s+"), " ").trim()
+fun sanitizeProfileName(name: String): String = ProfileRepository.sanitizeName(name)
 
 /** Validates a new profile name; [current] is the name being renamed, which may be kept. */
 fun validateProfileName(name: String, existing: Collection<String>, current: String? = null): NameError? {
-    val trimmed = name.trim()
+    val trimmed = sanitizeProfileName(name)
     return when {
         trimmed.isEmpty() -> NameError.EMPTY
         trimmed != current && trimmed in existing -> NameError.TAKEN
@@ -60,7 +61,7 @@ fun ProfileNameDialog(
         mutableStateOf(TextFieldValue(initialName, TextRange(0, initialName.length)))
     }
     val error = validateProfileName(value.text, existingNames, current)
-    val canConfirm = error == null && value.text.trim() != current
+    val canConfirm = error == null && sanitizeProfileName(value.text) != current
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
 
@@ -79,12 +80,12 @@ fun ProfileNameDialog(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Done,
                 ),
-                keyboardActions = KeyboardActions(onDone = { if (canConfirm) onConfirm(value.text.trim()) }),
+                keyboardActions = KeyboardActions(onDone = { if (canConfirm) onConfirm(sanitizeProfileName(value.text)) }),
                 modifier = Modifier.focusRequester(focusRequester),
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value.text.trim()) }, enabled = canConfirm) {
+            TextButton(onClick = { onConfirm(sanitizeProfileName(value.text)) }, enabled = canConfirm) {
                 Text(confirmLabel)
             }
         },

@@ -11,14 +11,13 @@ import net.typeblog.socks.SocksApp
 import net.typeblog.socks.ui.Routes
 import net.typeblog.socks.ui.common.UiMessage
 import net.typeblog.socks.vpn.VpnController
-import net.typeblog.socks.vpn.VpnState
 import net.typeblog.socks.vpn.VpnStateHolder
 
 /**
  * Holds the in-progress edit of one profile. Shared with the app picker, which is a nested
  * destination of the editor and writes its selection straight into [form].
  */
-class EditorViewModel(application: Application, savedStateHandle: SavedStateHandle) :
+class EditorViewModel(application: Application, private val savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
     private val app: SocksApp = getApplication()
     private val repo = app.profiles
@@ -27,8 +26,10 @@ class EditorViewModel(application: Application, savedStateHandle: SavedStateHand
 
     private var saved by mutableStateOf(repo.get(profileName)?.let(EditorForm::from))
 
-    /** The form being edited, or null if the profile no longer exists. */
-    var form by mutableStateOf(saved)
+    /** The form being edited, or null if the profile no longer exists. Survives process death. */
+    var form by mutableStateOf(
+        saved?.let { s -> savedStateHandle.get<String>(KEY_FORM)?.let { EditorForm.fromJson(it) } ?: s },
+    )
         private set
 
     val errors: EditorErrors get() = form?.validate() ?: EditorErrors()
@@ -37,6 +38,7 @@ class EditorViewModel(application: Application, savedStateHandle: SavedStateHand
 
     fun update(transform: (EditorForm) -> EditorForm) {
         form = form?.let(transform)
+        savedStateHandle[KEY_FORM] = form?.toJson()
     }
 
     fun toggleApp(packageName: String) = update {
@@ -54,13 +56,15 @@ class EditorViewModel(application: Application, savedStateHandle: SavedStateHand
         val profile = current.toProfile(profileName) ?: return null
         repo.save(profile)
         saved = current
-        val running = when (val state = VpnStateHolder.state.value) {
-            is VpnState.Connected -> state.profileName == profileName
-            is VpnState.Connecting -> state.profileName == profileName
-            else -> false
-        }
+        savedStateHandle.remove<String>(KEY_FORM)
+        // The tunnel always runs the active profile (its state may still carry a pre-rename name).
+        val running = VpnStateHolder.state.value.isActive && repo.activeName.value == profileName
         if (!running) return UiMessage.Text(R.string.editor_saved)
         VpnController.restartIfRunning(app)
         return UiMessage.Text(R.string.editor_saved_reconnecting)
+    }
+
+    private companion object {
+        const val KEY_FORM = "editor_form"
     }
 }
