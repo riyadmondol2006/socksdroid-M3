@@ -10,8 +10,7 @@ global {
 	min_ttl=15m;
 	max_ttl=1w;
 	timeout=10;
-	daemon=on;
-	pid_file="{DIR}/pdnsd.pid";
+	daemon=off;
 }
 
 server {

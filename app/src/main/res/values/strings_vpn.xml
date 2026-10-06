@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notification -->
+    <string name="vpn_channel_name">VPN status</string>
+    <string name="vpn_channel_description">Shown while the proxy is connected</string>
+    <string name="vpn_notification_connecting">Connecting to %1$s…</string>
+    <string name="vpn_action_disconnect">Disconnect</string>
+
+    <!-- Quick Settings tile -->
+    <string name="vpn_tile_connecting">Connecting…</string>
+    <string name="vpn_tile_disconnecting">Disconnecting…</string>
+    <string name="vpn_tile_error">Connection failed</string>
+
+    <!-- Connection errors -->
+    <string name="vpn_error_permission">VPN permission not granted</string>
+    <string name="vpn_error_establish">Could not establish VPN interface</string>
+    <string name="vpn_error_foreground">Android did not allow the VPN to start in the background</string>
+    <string name="vpn_error_pdnsd_start">DNS daemon (pdnsd) failed to start</string>
+    <string name="vpn_error_pdnsd_stopped">DNS daemon (pdnsd) stopped unexpectedly</string>
+    <string name="vpn_error_tun2socks_start">tun2socks failed to start</string>
+    <string name="vpn_error_tun2socks_stopped">tun2socks stopped unexpectedly</string>
+    <string name="vpn_error_unexpected">Unexpected error: %1$s</string>
+
+    <!-- Proxy test -->
+    <string name="vpn_test_refused">Connection refused</string>
+    <string name="vpn_test_timeout">Timed out</string>
+    <string name="vpn_test_unknown_host">Unknown host</string>
+    <string name="vpn_test_unreachable">Server unreachable</string>
+    <string name="vpn_test_invalid_port">Invalid port</string>
+    <string name="vpn_test_closed">Connection closed by server</string>
+    <string name="vpn_test_not_socks5">Not a SOCKS5 server</string>
+    <string name="vpn_test_auth_required">Server requires authentication</string>
+    <string name="vpn_test_auth_failed">Authentication failed</string>
+    <string name="vpn_test_no_method">Server offers no supported authentication method</string>
+    <string name="vpn_test_credentials_too_long">Username or password is too long</string>
+</resources>
