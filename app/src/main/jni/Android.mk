@@ -16,6 +16,9 @@
 LOCAL_PATH := $(call my-dir)
 ROOT_PATH := $(LOCAL_PATH)
 
+# 16 KB page size compatibility (Android 15+ devices, Google Play requirement)
+PAGE_SIZE_LDFLAGS := -Wl,-z,max-page-size=16384
+
 ########################################################
 ## pdnsd library
 ########################################################
@@ -26,7 +29,8 @@ PDNSD_SOURCES  := $(wildcard $(LOCAL_PATH)/pdnsd/src/*.c)
 
 LOCAL_MODULE    := pdnsd
 LOCAL_SRC_FILES := $(PDNSD_SOURCES:$(LOCAL_PATH)/%=%)
-LOCAL_CFLAGS    := -Wall -O2 -I$(LOCAL_PATH)/pdnsd -DHAVE_STPCPY
+LOCAL_CFLAGS    := -Wall -O2 -I$(LOCAL_PATH)/pdnsd -DHAVE_STPCPY -DHAVE_MEMPCPY
+LOCAL_LDFLAGS   := $(PAGE_SIZE_LDFLAGS)
 
 include $(BUILD_EXECUTABLE)
 
@@ -46,24 +50,6 @@ LOCAL_SRC_FILES := $(addprefix libancillary/, $(ANCILLARY_SOURCE))
 include $(BUILD_STATIC_LIBRARY)
 
 ########################################################
-## system
-########################################################
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE:= system
-
-LOCAL_C_INCLUDES:= $(LOCAL_PATH)/libancillary
-
-LOCAL_SRC_FILES:= system.cpp
-
-LOCAL_LDLIBS := -ldl -llog
-
-LOCAL_STATIC_LIBRARIES := cpufeatures libancillary
-
-include $(BUILD_SHARED_LIBRARY)
-
-########################################################
 ## tun2socks
 ########################################################
 
@@ -73,7 +59,7 @@ LOCAL_CFLAGS := -std=gnu99
 LOCAL_CFLAGS += -DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE
 LOCAL_CFLAGS += -DBADVPN_USE_SELFPIPE -DBADVPN_USE_EPOLL
 LOCAL_CFLAGS += -DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE
-LOCAL_CFLAGS += -DNDEBUG -DANDROID
+LOCAL_CFLAGS += -DNDEBUG -DANDROID -O2
 # LOCAL_CFLAGS += -DTUN2SOCKS_JNI
 
 LOCAL_STATIC_LIBRARIES := libancillary
@@ -150,10 +136,8 @@ TUN2SOCKS_SOURCES := \
 LOCAL_MODULE := tun2socks
 
 LOCAL_LDLIBS := -ldl -llog
+LOCAL_LDFLAGS := $(PAGE_SIZE_LDFLAGS)
 
 LOCAL_SRC_FILES := $(addprefix badvpn/, $(TUN2SOCKS_SOURCES))
 
 include $(BUILD_EXECUTABLE)
-
-# Import cpufeatures
-$(call import-module,android/cpufeatures)
