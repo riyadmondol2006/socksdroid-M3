@@ -128,6 +128,11 @@ Without them, CI still builds, but the release APK is unsigned.
 | `KEY_ALIAS` | Key alias, e.g. `socksdroid` |
 | `KEY_PASSWORD` | Key password |
 
+### Publishing on Google Play
+
+See [docs/PLAY_STORE.md](docs/PLAY_STORE.md) for the policy checklist, Play Console answers and store listing
+assets.
+
 ### Native binaries
 
 `tun2socks` (from badvpn) and `pdnsd` are prebuilt in `app/src/main/jniLibs`. They are named `lib*.so` so that

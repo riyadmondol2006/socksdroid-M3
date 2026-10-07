@@ -1,0 +1,1 @@
+Route all apps or selected apps through your own SOCKS5 proxy server.
