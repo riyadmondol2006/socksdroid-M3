@@ -112,8 +112,11 @@ git push origin v2.1.0
 ### Continuous integration
 
 [`.github/workflows/build.yml`](.github/workflows/build.yml) runs on every push and pull request. It builds the
-debug and release APKs, runs lint, and uploads the APKs as a workflow artifact. Pushing a tag such as `v2.0.0`
-also publishes a GitHub release with the APKs attached.
+debug and release APKs and the release App Bundle (`.aab`, for Google Play), runs lint, and uploads everything as a
+workflow artifact.
+
+Every push to `master` is also published on the Releases page as `build-<versionCode>`, and pushing a tag such
+as `v2.1.0` publishes a release under that tag.
 
 To sign release builds in CI, add these repository secrets under *Settings → Secrets and variables → Actions*.
 Without them, CI still builds, but the release APK is unsigned.

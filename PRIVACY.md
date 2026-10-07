@@ -23,8 +23,8 @@ only and are discarded when the app process ends. The user can export profiles t
 ### Permissions
 
 * **VPN** – to route traffic through the SOCKS5 server.
-* **Query all packages** – only to show the list of installed apps for the per-app proxy feature. The list never
-  leaves the device.
+* **App list** – the per-app proxy picker shows installed apps that have a launcher icon. The list never leaves
+  the device.
 * **Notifications** – to show the ongoing connection status.
 * **Run at startup** – only used if "Connect on boot" is enabled.
 

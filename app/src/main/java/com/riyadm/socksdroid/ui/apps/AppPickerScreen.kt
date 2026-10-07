@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Deselect
 import androidx.compose.material.icons.rounded.Search
@@ -25,8 +24,6 @@ import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -116,17 +113,6 @@ fun AppPickerScreen(
                 query = viewModel.query,
                 onQueryChange = { viewModel.query = it },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-            FilterChip(
-                selected = viewModel.showSystem,
-                onClick = { viewModel.showSystem = !viewModel.showSystem },
-                label = { Text(stringResource(R.string.apps_show_system)) },
-                leadingIcon = if (viewModel.showSystem) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null, Modifier.size(FilterChipDefaults.IconSize)) }
-                } else {
-                    null
-                },
-                modifier = Modifier.padding(horizontal = 16.dp),
             )
             when {
                 viewModel.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

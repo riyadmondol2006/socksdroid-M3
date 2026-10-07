@@ -158,7 +158,6 @@
     <string name="apps_title">Choose apps</string>
     <string name="apps_search">Search apps</string>
     <string name="apps_clear_search">Clear search</string>
-    <string name="apps_show_system">System apps</string>
     <string name="apps_select_all">Select all shown apps</string>
     <string name="apps_clear">Clear selection</string>
     <string name="apps_empty">No apps found</string>

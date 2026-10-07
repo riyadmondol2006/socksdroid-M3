@@ -2,7 +2,6 @@ package com.riyadm.socksdroid.ui.apps
 
 import android.app.Application
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.LruCache
@@ -22,7 +21,7 @@ import kotlinx.coroutines.withContext
 import java.text.Collator
 
 @Immutable
-data class AppEntry(val packageName: String, val label: String, val system: Boolean)
+data class AppEntry(val packageName: String, val label: String)
 
 class AppPickerViewModel(application: Application) : AndroidViewModel(application) {
     private val pm: PackageManager = application.packageManager
@@ -37,7 +36,6 @@ class AppPickerViewModel(application: Application) : AndroidViewModel(applicatio
     private var pinnedInitialized = false
 
     var query by mutableStateOf("")
-    var showSystem by mutableStateOf(false)
 
     val loading: Boolean get() = allApps == null
 
@@ -45,8 +43,7 @@ class AppPickerViewModel(application: Application) : AndroidViewModel(applicatio
         val q = query.trim()
         allApps.orEmpty()
             .filter { app ->
-                (showSystem || !app.system || app.packageName in pinned) &&
-                    (q.isEmpty() || app.label.contains(q, ignoreCase = true) || app.packageName.contains(q, ignoreCase = true))
+                q.isEmpty() || app.label.contains(q, ignoreCase = true) || app.packageName.contains(q, ignoreCase = true)
             }
             // Stable sort: keeps the alphabetical order from loadApps() within each group.
             .sortedBy { it.packageName !in pinned }
@@ -73,33 +70,23 @@ class AppPickerViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    /**
+     * Apps with a launcher icon. Only these are visible to the app: the manifest declares a
+     * launcher-intent <queries> element instead of the restricted QUERY_ALL_PACKAGES permission.
+     */
     private fun loadApps(): List<AppEntry> {
-        val launchable = launcherIntent().let { intent ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                pm.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(0))
-            } else {
-                @Suppress("DEPRECATION")
-                pm.queryIntentActivities(intent, 0)
-            }
-        }.mapTo(HashSet()) { it.activityInfo.packageName }
-
-        val installed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
+        val activities = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.queryIntentActivities(launcherIntent(), PackageManager.ResolveInfoFlags.of(0))
         } else {
             @Suppress("DEPRECATION")
-            pm.getInstalledApplications(0)
+            pm.queryIntentActivities(launcherIntent(), 0)
         }
         val collator = Collator.getInstance()
-        return installed
+        return activities
+            .map { it.activityInfo.applicationInfo }
+            .distinctBy { it.packageName }
             .filter { it.packageName != ownPackage }
-            .map { info ->
-                AppEntry(
-                    packageName = info.packageName,
-                    label = info.loadLabel(pm).toString(),
-                    // Preinstalled apps with a launcher icon (browsers, stores...) are treated as user apps.
-                    system = info.flags and ApplicationInfo.FLAG_SYSTEM != 0 && info.packageName !in launchable,
-                )
-            }
+            .map { AppEntry(packageName = it.packageName, label = it.loadLabel(pm).toString()) }
             .sortedWith(compareBy(collator) { it.label })
     }
 
