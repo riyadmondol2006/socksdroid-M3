@@ -76,14 +76,43 @@ You need JDK 17 or newer (with `javac`) and the Android SDK with platform 37.
 The debug build uses the application ID `com.riyadm.socksdroid.debug`, so it can be installed next to a release
 build.
 
-To sign release builds, create `keystore.properties` in the project root. It is git-ignored.
+### Signing
 
-```properties
-storeFile=/path/to/release.jks
-storePassword=…
-keyAlias=…
-keyPassword=…
-```
+Release builds are signed when `keystore.properties` exists in the project root. The file is git-ignored.
+
+1. Create a keystore once and keep it safe. Every update must be signed with the same key.
+
+   ```sh
+   keytool -genkeypair -v -keystore ~/keys/socksdroid-m3.jks -storetype PKCS12 \
+     -alias socksdroid -keyalg RSA -keysize 4096 -validity 10000
+   ```
+
+2. Create `keystore.properties`:
+
+   ```properties
+   storeFile=/home/you/keys/socksdroid-m3.jks
+   storePassword=…
+   keyAlias=socksdroid
+   keyPassword=…
+   ```
+
+3. Build with `./gradlew assembleRelease`. The signed APK is `app/build/outputs/apk/release/app-release.apk`.
+
+### Continuous integration
+
+[`.github/workflows/build.yml`](.github/workflows/build.yml) runs on every push and pull request. It builds the
+debug and release APKs, runs lint, and uploads the APKs as a workflow artifact. Pushing a tag such as `v2.0.0`
+also publishes a GitHub release with the APKs attached.
+
+To sign release builds in CI, add these repository secrets under *Settings → Secrets and variables → Actions*.
+Without them, CI still builds, but the release APK is unsigned.
+
+| Secret | Value |
+|---|---|
+| `KEYSTORE_BASE64` | Output of `base64 -w0 ~/keys/socksdroid-m3.jks` |
+| `KEYSTORE_PASSWORD` | Keystore password |
+| `KEY_ALIAS` | Key alias, e.g. `socksdroid` |
+| `KEY_PASSWORD` | Key password |
 
 ### Native binaries
 

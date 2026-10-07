@@ -1,0 +1,99 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HAS_SIGNING_KEY: ${{ secrets.KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: "platforms;android-37.0 build-tools;37.0.0"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Release signing is optional: without these secrets the release APK is left unsigned.
+      - name: Set up release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        if: env.HAS_SIGNING_KEY == 'true'
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          cat > keystore.properties <<EOF
+          storeFile=$RUNNER_TEMP/release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Build and lint
+        run: ./gradlew assembleDebug assembleRelease lintDebug
+
+      - name: Collect APKs
+        run: |
+          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          suffix=${GITHUB_REF_NAME//\//-}
+          [[ "$GITHUB_REF_TYPE" == tag ]] || suffix="$version-${GITHUB_SHA::7}"
+          mkdir dist
+          cp app/build/outputs/apk/debug/app-debug.apk "dist/SocksDroid-M3-$suffix-debug.apk"
+          for apk in app/build/outputs/apk/release/*.apk; do
+            name=release
+            [[ "$apk" == *unsigned* ]] && name=release-unsigned
+            cp "$apk" "dist/SocksDroid-M3-$suffix-$name.apk"
+          done
+          ls -l dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: SocksDroid-M3-apks
+          path: dist/*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: SocksDroid-M3-apks
+          path: dist
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.apk --repo "$GITHUB_REPOSITORY" --title "SocksDroid M3 $GITHUB_REF_NAME" --generate-notes
