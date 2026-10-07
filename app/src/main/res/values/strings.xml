@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SocksDroid</string>
+    <string name="app_name">SocksDroid M3</string>
     <string name="tile_label">SOCKS proxy</string>
 
     <!-- Common actions -->
@@ -47,7 +47,7 @@
     <string name="home_test_failure">Test failed: %1$s</string>
     <string name="home_consent_denied">VPN permission was not granted</string>
     <string name="home_consent_unavailable">This device doesn\'t allow apps to set up a VPN</string>
-    <string name="home_start_blocked">Android didn\'t allow the VPN to start. Open SocksDroid and try again.</string>
+    <string name="home_start_blocked">Android didn\'t allow the VPN to start. Open SocksDroid M3 and try again.</string>
     <string name="home_switched_reconnecting">Switched to %1$s, reconnecting…</string>
     <plurals name="badge_per_app_proxy">
         <item quantity="one">Proxies %d app</item>
@@ -85,7 +85,7 @@
     <string name="profiles_imported_one">Imported %1$s</string>
     <string name="profiles_clipboard_invalid">The clipboard doesn\'t contain a socks5:// link</string>
     <string name="profiles_link_invalid">This isn\'t a valid SOCKS link</string>
-    <string name="profiles_import_invalid">This file doesn\'t contain SocksDroid profiles</string>
+    <string name="profiles_import_invalid">This file doesn\'t contain SocksDroid M3 profiles</string>
     <string name="profiles_import_failed">Couldn\'t read the file</string>
     <string name="profiles_export_failed">Couldn\'t write the file</string>
     <string name="profiles_no_file_picker">No file manager is available</string>
@@ -100,7 +100,7 @@
 
     <!-- Incoming socks5:// links -->
     <string name="import_title">Import profile?</string>
-    <string name="import_message">A link wants to add this SOCKS server to SocksDroid.</string>
+    <string name="import_message">A link wants to add this SOCKS server to SocksDroid M3.</string>
     <string name="import_user">User: %1$s</string>
 
     <!-- Profile editor -->
@@ -179,7 +179,7 @@
     <string name="settings_auto_reconnect">Auto-reconnect</string>
     <string name="settings_auto_reconnect_summary">Restart the tunnel if it stops unexpectedly</string>
     <string name="settings_always_on">Always-on VPN &amp; kill switch</string>
-    <string name="settings_always_on_summary">In system VPN settings, tap the gear next to SocksDroid to keep it always on and block connections without VPN</string>
+    <string name="settings_always_on_summary">In system VPN settings, tap the gear next to SocksDroid M3 to keep it always on and block connections without VPN</string>
     <string name="settings_notifications">Allow notifications</string>
     <string name="settings_notifications_summary">Show connection status and a disconnect button while connected</string>
     <string name="settings_tile">Quick Settings tile</string>
@@ -195,7 +195,7 @@
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version</string>
     <string name="settings_source">Source code</string>
-    <string name="settings_source_summary">github.com/riyadmondol2006/SocksDroid</string>
+    <string name="settings_source_summary">github.com/riyadmondol2006/socksdroid</string>
     <string name="settings_privacy">Privacy policy</string>
     <string name="settings_license">License</string>
     <string name="settings_license_summary">GNU General Public License v3.0</string>
@@ -208,7 +208,7 @@
     <string name="logs_copy">Copy all</string>
     <string name="logs_copied">Logs copied</string>
     <string name="logs_share">Share</string>
-    <string name="logs_share_title">SocksDroid logs</string>
+    <string name="logs_share_title">SocksDroid M3 logs</string>
     <string name="logs_clear">Clear</string>
 
 </resources>

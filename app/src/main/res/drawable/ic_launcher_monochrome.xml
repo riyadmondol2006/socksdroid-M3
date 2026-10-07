@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Single-color variant of the launcher glyph for themed icons (Android 13+). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,28.5L74,35.6V51C74,64.9 66,75.3 54,80.8C42,75.3 34,64.9 34,51V35.6Z"
+        android:strokeWidth="4.5"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M61.5,45H54C48.3,45 48.3,54 54,54C59.7,54 59.7,63 54,63H46.5"
+        android:strokeWidth="4.5"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M61.5,45m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0M46.5,63m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+</vector>

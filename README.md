@@ -1,11 +1,14 @@
-SocksDroid
-==========
+SocksDroid M3
+=============
 
 A SOCKS5 VPN client for Android 8.0+ built on Android's `VpnService`, with a Material 3 (Material You) interface.
 
 This fork is a full rewrite of [SocksDroid by PeterCxy](https://github.com/PeterCxy/SocksDroid), via the
 [maintained fork by bndeff](https://github.com/bndeff/socksdroid). All app code is now Kotlin with Jetpack
 Compose. It targets the latest Android release (API 37) and supports 16 KB memory pages.
+
+Package name: `com.riyadm.socksdroid`. It installs as a separate app from the original SocksDroid
+(`net.typeblog.socks`).
 
 ## Features
 
@@ -41,8 +44,9 @@ Compose. It targets the latest Android release (API 37) and supports 16 KB memor
 
 ## What changed in this fork
 
-| | 1.x | This fork |
+| | SocksDroid 1.x | SocksDroid M3 |
 |---|---|---|
+| Package | `net.typeblog.socks` | `com.riyadm.socksdroid` |
 | Language | Java | Kotlin |
 | UI | Framework `PreferenceFragment` | Jetpack Compose, Material 3, dynamic color |
 | Target SDK | 31 | 37 (Android 17) |
@@ -69,7 +73,7 @@ You need JDK 17 or newer (with `javac`) and the Android SDK with platform 37.
 ./gradlew assembleRelease    # minified with R8
 ```
 
-The debug build uses the application ID `net.typeblog.socks.debug`, so it can be installed next to a release
+The debug build uses the application ID `com.riyadm.socksdroid.debug`, so it can be installed next to a release
 build.
 
 To sign release builds, create `keystore.properties` in the project root. It is git-ignored.
@@ -104,7 +108,7 @@ apps ──► tun0 (VpnService) ──► tun2socks ──► SOCKS5 server ─
 - `vpn/SocksVpnService.kt` sets up the tun interface and supervises the two native daemons. It passes the tun file
   descriptor to tun2socks over a Unix socket using `LocalSocket`.
 - The app excludes itself from its own VPN, so tun2socks and the DNS relay can reach the SOCKS5 server directly.
-- `data/` stores profiles and settings in SharedPreferences. Profiles saved by SocksDroid 1.x are converted automatically on first launch.
+- `data/` stores profiles and settings in SharedPreferences.
 - `ui/` contains the Compose screens: Home, Profiles, Editor, App picker, Settings and Logs.
 
 ## Privacy

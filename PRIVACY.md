@@ -1,18 +1,18 @@
-## Privacy policy for SocksDroid
+## Privacy policy for SocksDroid M3
 
-SocksDroid is a generic VPN application that connects to a SOCKS5 server specified by the user.
-It contains no analytics, advertising or tracking code and doesn't collect any data for the SocksDroid developers.
+SocksDroid M3 is a generic VPN application that connects to a SOCKS5 server specified by the user.
+It contains no analytics, advertising or tracking code and doesn't collect any data for its developers.
 
 ### Network connections
 
-* While connected, SocksDroid forwards all or some of the device's network traffic (as configured by the user)
+* While connected, SocksDroid M3 forwards all or some of the device's network traffic (as configured by the user)
   to the SOCKS5 server specified in the active profile. DNS queries are sent over TCP to the DNS server configured
   in the profile.
 * The optional **Test connection** feature connects to the configured SOCKS5 server and, through that server,
   requests `api.ipify.org` once to display the public IP address seen by websites. This only happens when
   the user taps the button.
 
-SocksDroid does not connect to any other service.
+SocksDroid M3 does not connect to any other service.
 
 ### Data stored on the device
 
@@ -30,11 +30,11 @@ only and are discarded when the app process ends. The user can export profiles t
 
 ### Trusting the server
 
-As a VPN application SocksDroid forwards network traffic to the server specified,
+As a VPN application SocksDroid M3 forwards network traffic to the server specified,
 so it is important that the user trusts this server. In particular if the server is maintained by a third-party
 VPN provider, this provider will be able to read or modify data transmitted from any application using non-encrypted
 protocols or block access to applications using encrypted protocols.
-This is not specific to SocksDroid, any VPN application has the same concerns.
+This is not specific to SocksDroid M3, any VPN application has the same concerns.
 
-SocksDroid is [open source](https://github.com/riyadmondol2006/socksdroid), which makes it easier to review its
+SocksDroid M3 is [open source](https://github.com/riyadmondol2006/socksdroid), which makes it easier to review its
 security by independent researchers.
