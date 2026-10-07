@@ -18,6 +18,10 @@ data class AppSettings(
     val connectOnBoot: Boolean = false,
     /** Reconnect automatically if tun2socks exits unexpectedly. */
     val autoReconnect: Boolean = true,
+    /** The user accepted the in-app VPN disclosure shown before the first connection. */
+    val vpnDisclosureAccepted: Boolean = false,
+    /** The one-time notification permission prompt before connecting was shown. */
+    val notificationPromptShown: Boolean = false,
 )
 
 /** App-wide preferences, read synchronously at startup so the first frame uses the right theme. */
@@ -36,6 +40,8 @@ class SettingsRepository(context: Context) {
             putBoolean("amoled_black", new.amoledBlack)
             putBoolean("connect_on_boot", new.connectOnBoot)
             putBoolean("auto_reconnect", new.autoReconnect)
+            putBoolean("vpn_disclosure_accepted", new.vpnDisclosureAccepted)
+            putBoolean("notification_prompt_shown", new.notificationPromptShown)
         }
         _settings.value = new
     }
@@ -48,6 +54,8 @@ class SettingsRepository(context: Context) {
             amoledBlack = prefs.getBoolean("amoled_black", d.amoledBlack),
             connectOnBoot = prefs.getBoolean("connect_on_boot", d.connectOnBoot),
             autoReconnect = prefs.getBoolean("auto_reconnect", d.autoReconnect),
+            vpnDisclosureAccepted = prefs.getBoolean("vpn_disclosure_accepted", d.vpnDisclosureAccepted),
+            notificationPromptShown = prefs.getBoolean("notification_prompt_shown", d.notificationPromptShown),
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.riyadm.socksdroid.ui
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -8,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -19,10 +17,6 @@ import com.riyadm.socksdroid.vpn.VpnController
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
-
-    private val consentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) viewModel.connect() else viewModel.onConsentDenied()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -53,18 +47,8 @@ class MainActivity : ComponentActivity() {
 
     private fun handleIntent(intent: Intent) {
         when (intent.action) {
-            VpnController.ACTION_REQUEST_CONNECT -> requestConnect()
+            VpnController.ACTION_REQUEST_CONNECT -> viewModel.requestConnect()
             Intent.ACTION_VIEW -> viewModel.onImportLink(intent.dataString)
-        }
-    }
-
-    /** Sent by the Quick Settings tile when VPN consent is still missing. */
-    private fun requestConnect() {
-        val consent = viewModel.consentIntent() ?: return viewModel.connect()
-        try {
-            consentLauncher.launch(consent)
-        } catch (_: ActivityNotFoundException) {
-            viewModel.onConsentUnavailable()
         }
     }
 }

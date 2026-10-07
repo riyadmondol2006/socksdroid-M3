@@ -18,6 +18,17 @@ object VpnController {
     fun prepare(context: Context): Intent? = VpnService.prepare(context)
 
     /**
+     * True if connecting requires the app's UI first: the VPN notice hasn't been accepted, Android's
+     * VPN consent is missing, or the active profile needs local network access that isn't granted.
+     */
+    fun needsUserSetup(context: Context): Boolean {
+        val app = SocksApp.instance
+        return !app.settings.settings.value.vpnDisclosureAccepted ||
+            prepare(context) != null ||
+            LocalNetwork.isMissingFor(context, app.profiles.active)
+    }
+
+    /**
      * Starts the VPN with the active profile (or [profileName] if given, which also becomes active).
      * May throw [IllegalStateException] if the app is not allowed to start a foreground service.
      */

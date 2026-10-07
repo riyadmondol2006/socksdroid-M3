@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.StateFlow
 import com.riyadm.socksdroid.R
+import com.riyadm.socksdroid.vpn.VpnController
 import com.riyadm.socksdroid.data.AppSettings
 import com.riyadm.socksdroid.data.ThemeMode
 import com.riyadm.socksdroid.ui.common.MessagingViewModel
@@ -25,6 +26,12 @@ class SettingsViewModel(application: Application) : MessagingViewModel(applicati
     fun setConnectOnBoot(enabled: Boolean) = repo.update { it.copy(connectOnBoot = enabled) }
 
     fun setAutoReconnect(enabled: Boolean) = repo.update { it.copy(autoReconnect = enabled) }
+
+    /** Declining the VPN notice withdraws consent: the VPN stops and the notice is shown before the next connection. */
+    fun setDisclosureAccepted(accepted: Boolean) {
+        repo.update { it.copy(vpnDisclosureAccepted = accepted) }
+        if (!accepted) VpnController.stop(app)
+    }
 
     fun onSystemSettingsUnavailable() = post(UiMessage.Text(R.string.settings_unavailable))
 

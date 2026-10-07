@@ -56,6 +56,7 @@ import com.riyadm.socksdroid.ui.apps.AppPickerScreen
 import com.riyadm.socksdroid.ui.common.AppSnackbar
 import com.riyadm.socksdroid.ui.common.LocalAppSnackbar
 import com.riyadm.socksdroid.ui.common.MessagesEffect
+import com.riyadm.socksdroid.ui.connect.ConnectFlowHost
 import com.riyadm.socksdroid.ui.editor.EditorViewModel
 import com.riyadm.socksdroid.ui.editor.ProfileEditorScreen
 import com.riyadm.socksdroid.ui.home.HomeScreen
@@ -74,76 +75,78 @@ fun SocksDroidApp(mainViewModel: MainViewModel) {
     val snackbar = remember(hostState, scope) { AppSnackbar(hostState, scope) }
 
     CompositionLocalProvider(LocalAppSnackbar provides snackbar) {
-        MessagesEffect(mainViewModel.messages)
-        val backStackEntry by navController.currentBackStackEntryAsState()
-        val destination = backStackEntry?.destination
-        val currentTopLevel = TopLevelDestination.entries.firstOrNull { top ->
-            destination?.hierarchy?.any { it.route == top.route } == true
-        }
-        val showNavigation = destination == null || currentTopLevel != null
+        ConnectFlowHost(requests = mainViewModel.connectRequests) {
+            MessagesEffect(mainViewModel.messages)
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val destination = backStackEntry?.destination
+            val currentTopLevel = TopLevelDestination.entries.firstOrNull { top ->
+                destination?.hierarchy?.any { it.route == top.route } == true
+            }
+            val showNavigation = destination == null || currentTopLevel != null
 
-        BoxWithConstraints {
-            val useRail = maxWidth >= RailBreakpoint
-            Scaffold(
-                contentWindowInsets = WindowInsets(0),
-                bottomBar = {
-                    if (showNavigation && !useRail) {
-                        NavigationBar {
-                            TopLevelDestination.entries.forEach { top ->
-                                val selected = top == currentTopLevel
-                                NavigationBarItem(
-                                    selected = selected,
-                                    onClick = { navController.navigateTopLevel(top.route) },
-                                    icon = { Icon(if (selected) top.selectedIcon else top.icon, contentDescription = null) },
-                                    label = { Text(stringResource(top.label)) },
-                                )
-                            }
-                        }
-                    }
-                },
-            ) { padding ->
-                Row(
-                    Modifier
-                        .padding(padding)
-                        .consumeWindowInsets(padding),
-                ) {
-                    val railShown = showNavigation && useRail
-                    if (railShown) {
-                        NavigationRail {
-                            Column(Modifier.padding(top = 8.dp)) {
+            BoxWithConstraints {
+                val useRail = maxWidth >= RailBreakpoint
+                Scaffold(
+                    contentWindowInsets = WindowInsets(0),
+                    bottomBar = {
+                        if (showNavigation && !useRail) {
+                            NavigationBar {
                                 TopLevelDestination.entries.forEach { top ->
                                     val selected = top == currentTopLevel
-                                    NavigationRailItem(
+                                    NavigationBarItem(
                                         selected = selected,
                                         onClick = { navController.navigateTopLevel(top.route) },
-                                        icon = {
-                                            Icon(if (selected) top.selectedIcon else top.icon, contentDescription = null)
-                                        },
+                                        icon = { Icon(if (selected) top.selectedIcon else top.icon, contentDescription = null) },
                                         label = { Text(stringResource(top.label)) },
                                     )
                                 }
                             }
                         }
+                    },
+                ) { padding ->
+                    Row(
+                        Modifier
+                            .padding(padding)
+                            .consumeWindowInsets(padding),
+                    ) {
+                        val railShown = showNavigation && useRail
+                        if (railShown) {
+                            NavigationRail {
+                                Column(Modifier.padding(top = 8.dp)) {
+                                    TopLevelDestination.entries.forEach { top ->
+                                        val selected = top == currentTopLevel
+                                        NavigationRailItem(
+                                            selected = selected,
+                                            onClick = { navController.navigateTopLevel(top.route) },
+                                            icon = {
+                                                Icon(if (selected) top.selectedIcon else top.icon, contentDescription = null)
+                                            },
+                                            label = { Text(stringResource(top.label)) },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        AppNavHost(
+                            navController = navController,
+                            modifier = if (railShown) {
+                                Modifier.consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+                            } else {
+                                Modifier
+                            },
+                        )
                     }
-                    AppNavHost(
-                        navController = navController,
-                        modifier = if (railShown) {
-                            Modifier.consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
-                        } else {
-                            Modifier
-                        },
-                    )
                 }
             }
-        }
 
-        val pendingImport by mainViewModel.pendingImport.collectAsStateWithLifecycle()
-        pendingImport?.let { profile ->
-            ImportLinkDialog(
-                profile = profile,
-                onConfirm = mainViewModel::confirmImport,
-                onDismiss = mainViewModel::dismissImport,
-            )
+            val pendingImport by mainViewModel.pendingImport.collectAsStateWithLifecycle()
+            pendingImport?.let { profile ->
+                ImportLinkDialog(
+                    profile = profile,
+                    onConfirm = mainViewModel::confirmImport,
+                    onDismiss = mainViewModel::dismissImport,
+                )
+            }
         }
     }
 }

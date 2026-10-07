@@ -54,6 +54,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.riyadm.socksdroid.ui.connect.VpnDisclosureDialog
+import com.riyadm.socksdroid.vpn.LocalNetwork
+import android.net.Uri
+import androidx.compose.material.icons.rounded.Lan
+import androidx.compose.material.icons.rounded.VpnKey
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -178,6 +184,7 @@ fun SettingsScreen(
                     icon = Icons.Rounded.Dashboard,
                 )
             }
+            if (LocalNetwork.isRequired) LocalNetworkPermissionItem(onOpenSettings = ::open)
 
             SectionHeader(stringResource(R.string.settings_section_troubleshooting))
             ActionListItem(
@@ -196,6 +203,25 @@ fun SettingsScreen(
             )
             LinkItem(R.string.settings_source, stringResource(R.string.settings_source_summary), Icons.Rounded.Code) {
                 openUrl(SOURCE_URL)
+            }
+            var showDisclosure by rememberSaveable { mutableStateOf(false) }
+            ActionListItem(
+                headline = stringResource(R.string.settings_disclosure),
+                supporting = stringResource(R.string.settings_disclosure_summary),
+                icon = Icons.Rounded.VpnKey,
+                onClick = { showDisclosure = true },
+            )
+            if (showDisclosure) {
+                VpnDisclosureDialog(
+                    onAccept = {
+                        showDisclosure = false
+                        viewModel.setDisclosureAccepted(true)
+                    },
+                    onDecline = {
+                        showDisclosure = false
+                        viewModel.setDisclosureAccepted(false)
+                    },
+                )
             }
             LinkItem(R.string.settings_privacy, null, Icons.Rounded.PrivacyTip) { openUrl(PRIVACY_URL) }
             LinkItem(R.string.settings_license, stringResource(R.string.settings_license_summary), Icons.Rounded.Gavel) {
@@ -285,6 +311,32 @@ private fun NotificationPermissionItem(onOpenSettings: (Intent) -> Unit) {
         supporting = stringResource(R.string.settings_notifications_summary),
         icon = Icons.Rounded.Notifications,
         onClick = { launcher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+    )
+}
+
+/** Shown on Android 17+ while local network access is missing; needed for servers on the LAN. */
+@Composable
+private fun LocalNetworkPermissionItem(onOpenSettings: (Intent) -> Unit) {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+    var granted by remember { mutableStateOf(LocalNetwork.isGranted(context)) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { granted = LocalNetwork.isGranted(context) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
+        granted = result
+        // Once the system stops showing the prompt, send the user to the app's settings page.
+        val promptBlocked = activity?.shouldShowRequestPermissionRationale(LocalNetwork.PERMISSION) == false
+        if (!result && promptBlocked) {
+            onOpenSettings(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
+            )
+        }
+    }
+    if (granted) return
+    ActionListItem(
+        headline = stringResource(R.string.settings_local_network),
+        supporting = stringResource(R.string.settings_local_network_summary),
+        icon = Icons.Rounded.Lan,
+        onClick = { launcher.launch(LocalNetwork.PERMISSION) },
     )
 }
 

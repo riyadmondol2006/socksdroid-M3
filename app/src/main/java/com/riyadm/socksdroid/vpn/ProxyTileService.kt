@@ -39,7 +39,8 @@ class ProxyTileService : TileService() {
         super.onClick()
         when {
             VpnStateHolder.state.value.isActive -> VpnController.stop(this)
-            VpnController.prepare(this) != null -> openApp()
+            // The app shows the VPN notice and permission prompts before the first connection.
+            VpnController.needsUserSetup(this) -> openApp()
             else -> try {
                 VpnController.start(this)
             } catch (e: IllegalStateException) {

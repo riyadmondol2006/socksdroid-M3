@@ -1,8 +1,10 @@
 package com.riyadm.socksdroid.ui
 
 import android.app.Application
-import android.content.Intent
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.riyadm.socksdroid.R
@@ -11,8 +13,6 @@ import com.riyadm.socksdroid.data.Profile
 import com.riyadm.socksdroid.ui.common.MessagingViewModel
 import com.riyadm.socksdroid.ui.common.UiMessage
 import com.riyadm.socksdroid.ui.common.sanitizeProfileName
-import com.riyadm.socksdroid.ui.common.startVpn
-import com.riyadm.socksdroid.vpn.VpnController
 
 /** Activity-scoped state: theme settings, `socks5://` link imports and connect requests from the tile. */
 class MainViewModel(application: Application) : MessagingViewModel(application) {
@@ -44,14 +44,12 @@ class MainViewModel(application: Application) : MessagingViewModel(application) 
         _pendingImport.value = null
     }
 
-    /** The system VPN consent intent, or null if consent was already granted. */
-    fun consentIntent(): Intent? = VpnController.prepare(app)
+    private val _connectRequests = Channel<Unit>(Channel.CONFLATED)
 
-    fun connect() {
-        startVpn(app)?.let(::post)
+    /** Connection requests from the Quick Settings tile, handled by the connect flow. */
+    val connectRequests: Flow<Unit> = _connectRequests.receiveAsFlow()
+
+    fun requestConnect() {
+        _connectRequests.trySend(Unit)
     }
-
-    fun onConsentDenied() = post(UiMessage.Text(R.string.home_consent_denied))
-
-    fun onConsentUnavailable() = post(UiMessage.Text(R.string.home_consent_unavailable))
 }

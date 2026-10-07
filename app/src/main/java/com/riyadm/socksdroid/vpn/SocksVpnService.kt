@@ -182,6 +182,7 @@ class SocksVpnService : VpnService() {
     private suspend fun connect(profile: Profile) {
         setState(VpnState.Connecting(profile.name))
         if (!profile.isValid) fail(R.string.vpn_error_invalid_profile)
+        if (LocalNetwork.isMissingFor(this, profile)) fail(R.string.vpn_error_local_network)
         LogBuffer.append(LOG_TAG, "Connecting to ${profile.endpoint} (profile \"${profile.name}\")")
         withContext(Dispatchers.IO) {
             pdnsd.killStale()
@@ -367,7 +368,7 @@ class SocksVpnService : VpnService() {
             this,
             VpnNotifications.NOTIFICATION_ID,
             notifications.build(profile, connectedSince),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED,
         )
         true
     } catch (e: IllegalStateException) {

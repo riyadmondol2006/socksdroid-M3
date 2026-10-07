@@ -1,15 +1,7 @@
 package com.riyadm.socksdroid.ui.home
 
-import android.Manifest
-import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.SystemClock
 import android.text.format.DateUtils
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -37,7 +29,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -45,11 +36,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import com.riyadm.socksdroid.R
+import com.riyadm.socksdroid.ui.connect.LocalConnectFlow
 import com.riyadm.socksdroid.ui.common.LocalAppSnackbar
 import com.riyadm.socksdroid.ui.common.MessagesEffect
 import com.riyadm.socksdroid.ui.common.ProfileNameDialog
@@ -63,39 +54,11 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     MessagesEffect(viewModel.messages)
 
-    val consentLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) viewModel.connect() else viewModel.onConsentDenied()
-    }
-    fun requestConsentAndConnect() {
-        val consent = viewModel.consentIntent() ?: return viewModel.connect()
-        try {
-            consentLauncher.launch(consent)
-        } catch (_: ActivityNotFoundException) {
-            viewModel.onConsentUnavailable()
-        }
-    }
-    // Asked once before the first connection; the connection proceeds whatever the answer.
-    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        requestConsentAndConnect()
-    }
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun shouldAskForNotifications(): Boolean =
-        !viewModel.notificationPromptShown &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
-            PackageManager.PERMISSION_GRANTED
-
+    val connectFlow = LocalConnectFlow.current
     val onToggle: () -> Unit = {
-        when {
-            state.vpnState.isActive -> viewModel.disconnect()
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && shouldAskForNotifications() -> {
-                viewModel.markNotificationPromptShown()
-                notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            else -> requestConsentAndConnect()
-        }
+        if (state.vpnState.isActive) viewModel.disconnect() else connectFlow.connect()
     }
 
     var showSwitcher by rememberSaveable { mutableStateOf(false) }
@@ -137,7 +100,7 @@ fun HomeScreen(
                     test = state.test,
                     onSwitch = { showSwitcher = true },
                     onEdit = { onEditProfile(state.activeProfile.name) },
-                    onTest = viewModel::testConnection,
+                    onTest = { connectFlow.withLocalNetworkAccess(state.activeProfile, viewModel::testConnection) },
                     modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
                 )
             }

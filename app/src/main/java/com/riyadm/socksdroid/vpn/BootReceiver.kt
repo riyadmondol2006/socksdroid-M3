@@ -10,8 +10,8 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
         if (!SocksApp.instance.settings.settings.value.connectOnBoot) return
-        if (VpnController.prepare(context) != null) {
-            LogBuffer.append(LOG_TAG, "Connect on boot skipped: VPN permission not granted")
+        if (VpnController.needsUserSetup(context)) {
+            LogBuffer.append(LOG_TAG, "Connect on boot skipped: open the app and connect once first")
             return
         }
         try {

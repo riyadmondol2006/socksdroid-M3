@@ -18,6 +18,9 @@ import java.net.NoRouteToHostException
 import java.net.Socket
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.SSLSocket
+import javax.net.ssl.HttpsURLConnection
 
 sealed interface ProxyTestResult {
     /** [latencyMs]: time to complete TCP connect + SOCKS5 greeting (+ auth). [exitIp] may be null if lookup failed. */
@@ -32,7 +35,7 @@ sealed interface ProxyTestResult {
 object ProxyTester {
     private const val TIMEOUT_MS = 5_000
     private const val IP_HOST = "api.ipify.org"
-    private const val IP_PORT = 80
+    private const val IP_PORT = 443
     private const val MAX_RESPONSE_BYTES = 16 * 1024
 
     private val IPV4 = Regex("""\d{1,3}(\.\d{1,3}){3}""")
@@ -40,6 +43,9 @@ object ProxyTester {
 
     suspend fun test(profile: Profile): ProxyTestResult = withContext(Dispatchers.IO) {
         val app = SocksApp.instance
+        if (LocalNetwork.isMissingFor(app, profile)) {
+            return@withContext ProxyTestResult.Failure(app.getString(R.string.vpn_test_local_network))
+        }
         try {
             Socket().use { socket ->
                 val started = SystemClock.elapsedRealtime()
@@ -50,7 +56,7 @@ object ProxyTester {
                 Socks5.negotiate(profile, input, output)
                 val latency = SystemClock.elapsedRealtime() - started
                 val exitIp = try {
-                    lookupExitIp(input, output)
+                    lookupExitIp(socket, input, output)
                 } catch (_: IOException) {
                     null
                 }
@@ -82,18 +88,26 @@ object ProxyTester {
         }
     }
 
-    /** Opens a CONNECT tunnel to [IP_HOST] and returns the address it reports, or null. */
-    private fun lookupExitIp(input: DataInputStream, output: OutputStream): String? {
+    /**
+     * Opens a CONNECT tunnel to [IP_HOST] and returns the address it reports, or null. The request
+     * uses HTTPS so the proxy can't read or alter it.
+     */
+    private fun lookupExitIp(socket: Socket, input: DataInputStream, output: OutputStream): String? {
         if (!Socks5.connect(input, output, IP_HOST, IP_PORT)) return null
-        output.write("GET / HTTP/1.1\r\nHost: $IP_HOST\r\nConnection: close\r\n\r\n".toByteArray())
-        output.flush()
-        val response = input.readAtMost(MAX_RESPONSE_BYTES).decodeToString()
-        val head = response.substringBefore("\r\n\r\n")
-        if (head.lineSequence().firstOrNull()?.split(' ')?.getOrNull(1) != "200") return null
-        // Works for both plain and chunked bodies: pick the line that looks like an address.
-        return response.substringAfter("\r\n\r\n").lineSequence()
-            .map(String::trim)
-            .firstOrNull { IPV4.matches(it) || IPV6.matches(it) }
+        val factory = SSLSocketFactory.getDefault() as SSLSocketFactory
+        (factory.createSocket(socket, IP_HOST, IP_PORT, false) as SSLSocket).use { tls ->
+            tls.startHandshake()
+            if (!HttpsURLConnection.getDefaultHostnameVerifier().verify(IP_HOST, tls.session)) return null
+            tls.outputStream.write("GET / HTTP/1.1\r\nHost: $IP_HOST\r\nConnection: close\r\n\r\n".toByteArray())
+            tls.outputStream.flush()
+            val response = tls.inputStream.readAtMost(MAX_RESPONSE_BYTES).decodeToString()
+            val head = response.substringBefore("\r\n\r\n")
+            if (head.lineSequence().firstOrNull()?.split(' ')?.getOrNull(1) != "200") return null
+            // Works for both plain and chunked bodies: pick the line that looks like an address.
+            return response.substringAfter("\r\n\r\n").lineSequence()
+                .map(String::trim)
+                .firstOrNull { IPV4.matches(it) || IPV6.matches(it) }
+        }
     }
 
     private fun InputStream.readAtMost(limit: Int): ByteArray {

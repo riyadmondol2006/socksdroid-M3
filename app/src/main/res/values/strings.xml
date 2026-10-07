@@ -210,4 +210,21 @@
     <string name="logs_share_title">SocksDroid M3 logs</string>
     <string name="logs_clear">Clear</string>
 
+
+    <!-- VPN disclosure shown before the first connection (Google Play VpnService policy) -->
+    <string name="disclosure_title">How SocksDroid M3 uses the VPN</string>
+    <string name="disclosure_intro">SocksDroid M3 uses Android\'s VPN service (VpnService) to send the internet traffic of all apps, or only the apps you choose, to the SOCKS5 proxy server set in your profile.</string>
+    <string name="disclosure_data">Your traffic goes only to the server you configure. The developer of SocksDroid M3 does not collect, store, see or share any of your traffic or personal data.</string>
+    <string name="disclosure_encryption">SOCKS5 does not encrypt traffic. The operator of the server can see and change traffic that isn\'t already encrypted (for example, traffic that doesn\'t use HTTPS).</string>
+    <string name="disclosure_control">You can disconnect at any time from the app, the notification or the Quick Settings tile.</string>
+    <string name="disclosure_accept">Accept</string>
+    <string name="disclosure_decline">Decline</string>
+    <string name="disclosure_declined">VPN not started. You can review this notice again the next time you connect.</string>
+    <string name="settings_disclosure">VPN service notice</string>
+    <string name="settings_disclosure_summary">How the app uses Android\'s VPN service</string>
+
+    <!-- Local network access (Android 17+) -->
+    <string name="connect_local_network_denied">Without local network access, a server on your local network can\'t be reached</string>
+    <string name="settings_local_network">Allow local network access</string>
+    <string name="settings_local_network_summary">Needed when your SOCKS5 or DNS server is on your home or office network</string>
 </resources>
