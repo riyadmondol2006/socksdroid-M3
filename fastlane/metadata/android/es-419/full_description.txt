@@ -1,0 +1,28 @@
+SocksDroid M3 conecta tu dispositivo a un servidor proxy SOCKS5 que administras o al que tienes acceso. Usa VpnService de Android (la función de VPN del sistema) para dirigir el tráfico de todas las apps, o solo de las apps que elijas, a través de ese servidor. Antes de la primera conexión, la app explica cómo se usa la VPN y te pide tu consentimiento.
+
+Es solo un cliente: no incluye ni vende ningún servidor proxy. Tú ingresas la dirección de tu propio servidor SOCKS5. La interfaz de la app está en inglés.
+
+Funciones
+• Dirige todas las apps, o solo las seleccionadas, a través del proxy. También puedes elegir apps que lo omitan.
+• Autenticación opcional con nombre de usuario y contraseña.
+• DNS a través del proxy, para que las consultas DNS no vayan directamente a tu red local.
+• "Bypass LAN" mantiene las direcciones de la red local accesibles de forma directa.
+• IPv6 se reenvía a través del proxy o se bloquea; nunca se envía por fuera de él.
+• Reenvío de UDP cuando el servidor ejecuta badvpn-udpgw.
+• Varios perfiles: compártelos e impórtalos como enlaces socks5://, o impórtalos y expórtalos como archivos.
+• "Test connection" comprueba el servidor y muestra la latencia y la dirección IP pública vista a través de él.
+• Mosaico de Configuración rápida y una notificación con un botón Disconnect.
+• Compatible con la VPN siempre activa de Android y la opción de bloquear conexiones sin VPN.
+• Conexión opcional al iniciar el dispositivo y reconexión automática.
+• Diseño Material You con colores dinámicos, temas claro y oscuro y una opción de negro puro.
+• Pantalla de registros para solucionar problemas.
+
+Importante
+• SOCKS5 no cifra tu tráfico. Úsalo con servidores de confianza y utiliza protocolos cifrados como HTTPS para los datos sensibles.
+• El operador del servidor al que te conectas puede ver y modificar el tráfico sin cifrar que pasa por él.
+
+Privacidad
+SocksDroid M3 no tiene anuncios, análisis ni cuentas. No recopila ningún dato. Los perfiles se guardan solo en tu dispositivo.
+
+Código abierto
+SocksDroid M3 es software libre bajo la GNU GPL v3. Es un fork independiente de SocksDroid de PeterCxy y no está afiliado con los autores originales. Código fuente: https://github.com/riyadmondol2006/socksdroid

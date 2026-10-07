@@ -1,0 +1,1 @@
+Arahkan semua aplikasi atau aplikasi pilihan lewat server proxy SOCKS5 Anda.

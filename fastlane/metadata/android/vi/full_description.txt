@@ -1,0 +1,28 @@
+SocksDroid M3 kết nối thiết bị của bạn với máy chủ proxy SOCKS5 do bạn vận hành hoặc có quyền truy cập. Ứng dụng dùng VpnService của Android (tính năng VPN của hệ thống) để định tuyến lưu lượng của mọi ứng dụng, hoặc chỉ những ứng dụng bạn chọn, qua máy chủ đó. Trước lần kết nối đầu tiên, ứng dụng giải thích cách VPN được sử dụng và xin sự đồng ý của bạn.
+
+Đây chỉ là ứng dụng khách: ứng dụng không kèm theo và không bán máy chủ proxy nào. Bạn tự nhập địa chỉ máy chủ SOCKS5 của mình. Giao diện ứng dụng bằng tiếng Anh.
+
+Tính năng
+• Định tuyến mọi ứng dụng, hoặc chỉ những ứng dụng đã chọn, qua proxy. Bạn cũng có thể chọn ứng dụng đi vòng qua proxy.
+• Xác thực bằng tên người dùng và mật khẩu (tùy chọn).
+• DNS qua proxy, để truy vấn DNS không đi thẳng vào mạng cục bộ của bạn.
+• "Bypass LAN" giữ cho các địa chỉ mạng cục bộ truy cập được trực tiếp.
+• IPv6 được chuyển tiếp qua proxy hoặc bị chặn, không bao giờ đi vòng qua proxy.
+• Chuyển tiếp UDP khi máy chủ chạy badvpn-udpgw.
+• Nhiều hồ sơ: chia sẻ và nhập dưới dạng liên kết socks5://, hoặc nhập và xuất dưới dạng tệp.
+• "Test connection" kiểm tra máy chủ, hiển thị độ trễ và địa chỉ IP công khai nhìn thấy qua máy chủ.
+• Ô Cài đặt nhanh và thông báo có nút Disconnect.
+• Hoạt động với VPN luôn bật của Android và tùy chọn chặn kết nối không qua VPN.
+• Tùy chọn kết nối khi khởi động thiết bị và tự động kết nối lại.
+• Thiết kế Material You với màu động, giao diện sáng và tối cùng tùy chọn đen tuyền.
+• Màn hình nhật ký để khắc phục sự cố.
+
+Quan trọng
+• SOCKS5 không mã hóa lưu lượng của bạn. Hãy dùng với máy chủ bạn tin tưởng và dựa vào các giao thức mã hóa như HTTPS cho dữ liệu nhạy cảm.
+• Người vận hành máy chủ bạn kết nối có thể xem và sửa đổi lưu lượng không mã hóa đi qua máy chủ đó.
+
+Quyền riêng tư
+SocksDroid M3 không có quảng cáo, không có phân tích và không cần tài khoản. Ứng dụng không thu thập bất kỳ dữ liệu nào. Hồ sơ chỉ được lưu trên thiết bị của bạn.
+
+Mã nguồn mở
+SocksDroid M3 là phần mềm tự do theo giấy phép GNU GPL v3. Đây là bản fork độc lập của SocksDroid do PeterCxy phát triển và không liên kết với các tác giả gốc. Mã nguồn: https://github.com/riyadmondol2006/socksdroid

@@ -1,0 +1,28 @@
+SocksDroid M3 connecte votre appareil à un serveur proxy SOCKS5 que vous gérez ou auquel vous avez accès. Il utilise le VpnService d'Android (la fonction VPN du système) pour faire passer le trafic de toutes les applis, ou seulement de celles que vous choisissez, par ce serveur. Avant la première connexion, l'appli explique comment le VPN est utilisé et vous demande votre consentement.
+
+C'est uniquement un client : il n'inclut ni ne vend aucun serveur proxy. Vous saisissez l'adresse de votre propre serveur SOCKS5. L'interface de l'appli est en anglais.
+
+Fonctionnalités
+• Faites passer toutes les applis, ou seulement celles que vous sélectionnez, par le proxy. Vous pouvez aussi choisir des applis qui le contournent.
+• Authentification facultative par nom d'utilisateur et mot de passe.
+• DNS via le proxy, pour que les requêtes DNS ne passent pas directement par votre réseau local.
+• « Bypass LAN » laisse les adresses du réseau local accessibles directement.
+• L'IPv6 est transmis via le proxy ou bloqué, jamais envoyé en dehors de celui-ci.
+• Transfert UDP lorsque le serveur exécute badvpn-udpgw.
+• Plusieurs profils : partagez-les et importez-les sous forme de liens socks5://, ou importez-les et exportez-les sous forme de fichiers.
+• « Test connection » vérifie le serveur et affiche la latence ainsi que l'adresse IP publique vue à travers lui.
+• Bloc des Réglages rapides et notification avec un bouton Disconnect.
+• Compatible avec le VPN permanent d'Android et l'option de blocage des connexions sans VPN.
+• Connexion facultative au démarrage et reconnexion automatique.
+• Design Material You avec couleurs dynamiques, thèmes clair et sombre et option noir pur.
+• Écran de journaux pour le dépannage.
+
+Important
+• SOCKS5 ne chiffre pas votre trafic. Utilisez-le avec des serveurs de confiance et privilégiez des protocoles chiffrés comme HTTPS pour les données sensibles.
+• L'opérateur du serveur auquel vous vous connectez peut voir et modifier le trafic non chiffré qui le traverse.
+
+Confidentialité
+SocksDroid M3 n'a ni publicité, ni outil d'analyse, ni compte. Il ne collecte aucune donnée. Les profils sont stockés uniquement sur votre appareil.
+
+Open source
+SocksDroid M3 est un logiciel libre sous licence GNU GPL v3. C'est un fork indépendant de SocksDroid de PeterCxy, sans lien avec les auteurs d'origine. Code source : https://github.com/riyadmondol2006/socksdroid

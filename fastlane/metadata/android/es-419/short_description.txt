@@ -1,0 +1,1 @@
+Dirige todas o algunas apps a través de tu propio servidor proxy SOCKS5.

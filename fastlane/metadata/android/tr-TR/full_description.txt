@@ -1,0 +1,28 @@
+SocksDroid M3, cihazınızı kendi çalıştırdığınız ya da erişiminiz olan bir SOCKS5 proxy sunucusuna bağlar. Android'in VpnService özelliğini (sistemin VPN özelliği) kullanarak tüm uygulamaların ya da yalnızca seçtiğiniz uygulamaların trafiğini bu sunucu üzerinden yönlendirir. İlk bağlantıdan önce uygulama, VPN'in nasıl kullanıldığını açıklar ve onayınızı ister.
+
+Yalnızca bir istemcidir: herhangi bir proxy sunucusu içermez veya satmaz. Kendi SOCKS5 sunucunuzun adresini siz girersiniz. Uygulamanın arayüzü İngilizcedir.
+
+Özellikler
+• Tüm uygulamaları ya da yalnızca seçtiklerinizi proxy üzerinden yönlendirin. Proxy'yi atlayacak uygulamaları da seçebilirsiniz.
+• İsteğe bağlı kullanıcı adı ve şifre doğrulaması.
+• Proxy üzerinden DNS; böylece DNS sorguları doğrudan yerel ağınıza gitmez.
+• "Bypass LAN", yerel ağ adreslerine doğrudan erişilebilmesini sağlar.
+• IPv6 proxy üzerinden iletilir ya da engellenir; asla proxy dışından gönderilmez.
+• Sunucuda badvpn-udpgw çalışıyorsa UDP yönlendirme.
+• Birden fazla profil: socks5:// bağlantıları olarak paylaşın ve içe aktarın ya da dosya olarak içe ve dışa aktarın.
+• "Test connection" sunucuyu kontrol eder; gecikmeyi ve sunucu üzerinden görünen genel IP adresini gösterir.
+• Hızlı Ayarlar kutucuğu ve Disconnect düğmeli bildirim.
+• Android'in her zaman açık VPN özelliği ve VPN olmadan bağlantıları engelleme seçeneğiyle çalışır.
+• İsteğe bağlı olarak cihaz açılışında bağlanma ve otomatik yeniden bağlanma.
+• Dinamik renkler, açık ve koyu temalar ve saf siyah seçeneğiyle Material You tasarımı.
+• Sorun giderme için günlük ekranı.
+
+Önemli
+• SOCKS5 trafiğinizi şifrelemez. Yalnızca güvendiğiniz sunucularla kullanın ve hassas veriler için HTTPS gibi şifreli protokollere güvenin.
+• Bağlandığınız sunucunun operatörü, sunucudan geçen şifrelenmemiş trafiği görebilir ve değiştirebilir.
+
+Gizlilik
+SocksDroid M3'te reklam, analiz aracı veya hesap yoktur. Hiçbir veri toplamaz. Profiller yalnızca cihazınızda saklanır.
+
+Açık kaynak
+SocksDroid M3, GNU GPL v3 lisanslı özgür bir yazılımdır. PeterCxy tarafından geliştirilen SocksDroid'in bağımsız bir çatalıdır (fork) ve orijinal geliştiricilerle bağlantılı değildir. Kaynak kodu: https://github.com/riyadmondol2006/socksdroid

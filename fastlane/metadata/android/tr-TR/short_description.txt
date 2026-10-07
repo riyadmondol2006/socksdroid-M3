@@ -1,0 +1,1 @@
+Tüm uygulamaları veya seçtiklerinizi kendi SOCKS5 proxy sunucunuzdan geçirin.

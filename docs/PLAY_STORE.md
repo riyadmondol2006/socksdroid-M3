@@ -152,6 +152,25 @@ SocksDroid M3 is free software under the GNU GPL v3. It is an independent fork o
 
 The `fastlane` files above are the source for these texts. If you change the listing, update both.
 
+### Translations
+
+`fastlane/metadata/android/<language>/` also holds translated listings for 12 languages: ar, bn-BD, de-DE, es-419,
+fr-FR, hi-IN, id, pt-BR, ru-RU, tr-TR, vi and zh-CN. Each says that the app's interface is in English.
+
+To add them in Play Console, go to **Grow users → Store presence → Store listings → Manage translations →
+Import translations with AI** and upload a single file with every language. To build that file:
+
+```sh
+for d in fastlane/metadata/android/*/; do
+  [ "$(basename "$d")" = en-US ] && continue
+  printf '===== %s =====\n\nApp name:\n%s\nShort description:\n%s\nFull description:\n%s\n\n' \
+    "$(basename "$d")" "$(cat "$d/title.txt")" "$(cat "$d/short_description.txt")" "$(cat "$d/full_description.txt")"
+done > store-translations.txt
+```
+
+Check the imported text in each language before you save. Translated listings use the en-US graphics unless you
+upload others.
+
 ## 4. Testing and release
 
 - **Personal accounts** created after Nov 13, 2023 must run a closed test with at least **12 testers for 14
