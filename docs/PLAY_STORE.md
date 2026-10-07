@@ -105,6 +105,53 @@ Everything is in [`fastlane/metadata/android/en-US`](../fastlane/metadata/androi
 - **Category:** Tools.
 - **Contact details:** an email address is required, and a website is optional (the GitHub repo works).
 
+### App name (13 / 30)
+
+```
+SocksDroid M3
+```
+
+### Short description (69 / 80)
+
+```
+Route all apps or selected apps through your own SOCKS5 proxy server.
+```
+
+### Full description (2,009 / 4,000)
+
+```
+SocksDroid M3 connects your device to a SOCKS5 proxy server that you run or have access to. It uses Android's VpnService (the system VPN feature) to route the traffic of all apps, or only the apps you choose, through that server. Before the first connection the app explains how the VPN is used and asks for your consent.
+
+It is a client only: it does not include or sell any proxy server. You enter the address of your own SOCKS5 server.
+
+Features
+• Route all apps, or only selected apps, through the proxy. You can also choose apps that bypass it.
+• Optional username and password authentication.
+• DNS through the proxy, so DNS lookups don't go directly to your local network.
+• Bypass LAN keeps local network addresses reachable directly.
+• IPv6 is forwarded through the proxy or blocked, never sent around it.
+• UDP forwarding when the server runs badvpn-udpgw.
+• Multiple profiles: share and import them as socks5:// links, or import and export them as files.
+• Test connection checks the server and shows the latency and the public IP address seen through it.
+• Quick Settings tile and a notification with a Disconnect button.
+• Works with Android's Always-on VPN and "Block connections without VPN" settings.
+• Optional connect on boot and automatic reconnect.
+• Material You design with dynamic colors, light and dark themes and a pure-black option.
+• Logs screen for troubleshooting.
+
+Important
+• SOCKS5 does not encrypt your traffic. Use it with servers you trust, and rely on encrypted protocols such as HTTPS for sensitive data.
+• The operator of the server you connect to can see and modify unencrypted traffic that passes through it.
+
+Privacy
+SocksDroid M3 has no ads, no analytics and no account. It does not collect any data. Profiles are stored only on your device.
+
+Open source
+SocksDroid M3 is free software under the GNU GPL v3. It is an independent fork of SocksDroid by PeterCxy and isn't affiliated with the original authors. Source code: https://github.com/riyadmondol2006/socksdroid
+```
+
+The `fastlane` files above are the source for these texts. If you change the listing, update both.
+
 ## 4. Testing and release
 
 - **Personal accounts** created after Nov 13, 2023 must run a closed test with at least **12 testers for 14
