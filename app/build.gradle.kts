@@ -13,11 +13,11 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "net.typeblog.socks"
+    namespace = "com.riyadm.socksdroid"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "net.typeblog.socks"
+        applicationId = "com.riyadm.socksdroid"
         minSdk = 26
         targetSdk = 37
         versionCode = 20

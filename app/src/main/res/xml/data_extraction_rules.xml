@@ -2,7 +2,7 @@
 <!-- Profiles (including credentials) are not uploaded to cloud backup; device-to-device transfer keeps them. -->
 <data-extraction-rules>
     <cloud-backup>
-        <exclude domain="sharedpref" path="profile.xml" />
+        <exclude domain="sharedpref" path="profiles.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="." />
