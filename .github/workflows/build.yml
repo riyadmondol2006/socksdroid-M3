@@ -21,7 +21,10 @@ jobs:
     env:
       HAS_SIGNING_KEY: ${{ secrets.KEYSTORE_BASE64 != '' }}
     steps:
+      # Full history and tags: the app version is derived from them.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v6
         with:
@@ -56,9 +59,8 @@ jobs:
 
       - name: Collect APKs
         run: |
-          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
-          suffix=${GITHUB_REF_NAME//\//-}
-          [[ "$GITHUB_REF_TYPE" == tag ]] || suffix="$version-${GITHUB_SHA::7}"
+          suffix=$(git describe --tags --match 'v[0-9]*' 2>/dev/null || git rev-parse --short=7 HEAD)
+          suffix=${suffix#v}
           mkdir dist
           cp app/build/outputs/apk/debug/app-debug.apk "dist/SocksDroid-M3-$suffix-debug.apk"
           for apk in app/build/outputs/apk/release/*.apk; do

@@ -1,5 +1,8 @@
 import java.util.Properties
 
+/** Version used until the first v* tag exists. */
+val BASE_VERSION = "2.0.0"
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -12,6 +15,19 @@ val keystoreProperties = Properties().apply {
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
+// Versions come from git: versionCode is the commit count (always increasing), versionName is
+// the latest v* tag, e.g. "2.1.0" on the tag itself or "2.1.0-3-gabc1234" three commits later.
+fun git(vararg args: String): String? = runCatching {
+    providers.exec {
+        commandLine("git", *args)
+        isIgnoreExitValue = true
+    }.standardOutput.asText.get().trim()
+}.getOrNull()?.takeIf { it.isNotEmpty() }
+
+val gitVersionCode = git("rev-list", "--count", "HEAD")?.toIntOrNull() ?: 1
+val gitVersionName = git("describe", "--tags", "--match", "v[0-9]*")?.removePrefix("v")
+    ?: "$BASE_VERSION-g${git("rev-parse", "--short=7", "HEAD") ?: "unknown"}"
+
 android {
     namespace = "com.riyadm.socksdroid"
     compileSdk = 37
@@ -20,8 +36,8 @@ android {
         applicationId = "com.riyadm.socksdroid"
         minSdk = 26
         targetSdk = 37
-        versionCode = 20
-        versionName = "2.0.0"
+        versionCode = gitVersionCode
+        versionName = gitVersionName
     }
 
     signingConfigs {

@@ -98,6 +98,17 @@ Release builds are signed when `keystore.properties` exists in the project root.
 
 3. Build with `./gradlew assembleRelease`. The signed APK is `app/build/outputs/apk/release/app-release.apk`.
 
+### Versioning
+
+Versions are automatic. `versionCode` is the number of commits, so every build is an upgrade. `versionName`
+comes from the latest `v*` git tag: `2.1.0` on the tagged commit, `2.1.0-3-gabc1234` three commits later. Before
+the first tag it is `2.0.0-g<commit>`. To release a version, tag it and push the tag:
+
+```sh
+git tag v2.1.0
+git push origin v2.1.0
+```
+
 ### Continuous integration
 
 [`.github/workflows/build.yml`](.github/workflows/build.yml) runs on every push and pull request. It builds the
